@@ -9,6 +9,10 @@
         "@angular/common": "^8.2.10",
         "@angular/core": "^8.2.10"
     },
+    "devDependencies": {
+        "karma-mocha-reporter": "^2.2.5",
+        "karma-notify-reporter": "^1.1.0"
+    },
     "license": "MIT",
     "repository": {
         "type": "git",
