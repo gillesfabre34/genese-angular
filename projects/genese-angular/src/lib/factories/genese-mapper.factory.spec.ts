@@ -3,6 +3,7 @@ import { Tools } from '../services/tools.service';
 
 describe('GeneseMapperFactory', () => {
     const geneseMapperFactory = new GeneseMapperFactory(Object);
+
     describe('_diveMap', () => {
 
         it('target true, source true', () => {
@@ -20,4 +21,13 @@ describe('GeneseMapperFactory', () => {
             expect(result === null).toBeTruthy();
         });
     });
+
+    describe('_cast', () => {
+
+        it('target true, source true', () => {
+            const result = geneseMapperFactory._diveMap(true, true);
+            expect(Tools.isSameObject(result, true)).toBeTruthy();
+        });
+    });
+
 });

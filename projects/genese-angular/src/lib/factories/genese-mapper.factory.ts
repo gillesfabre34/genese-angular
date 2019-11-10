@@ -101,7 +101,11 @@ export class GeneseMapperFactory<T> {
      */
     _diveMap<U>(target: U, source: any): any {
         if (Tools.isPrimitive(target)) {
-            return Tools.isPrimitive(source) ? this._cast(target, source) : target;
+            if (source === null) {
+                return source;
+            } else {
+                return Tools.isPrimitive(source) ? this._cast(target, source) : target;
+            }
         } else {
             return this._mapNotPrimitive(target, source);
         }
@@ -174,6 +178,7 @@ export class GeneseMapperFactory<T> {
      * This methodName adds a tolerance for http requests which returns numbers instead of strings and inversely
      */
     _cast(target: any, source: any): any {
+        // console.log('_cast target ' + target + ' / source ' + source);
         if (typeof target === typeof source) {
             return source;
         } else if (typeof target === 'string' && typeof source === 'number') {
