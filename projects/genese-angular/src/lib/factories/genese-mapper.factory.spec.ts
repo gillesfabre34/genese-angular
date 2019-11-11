@@ -148,6 +148,28 @@ describe('GENESE MAPPER FACTORY', () => {
 
 
     // **************************************************************************
+    // _mapIndexableType
+    // **************************************************************************
+
+
+    describe('_mapIndexableType', () => {
+
+        it('undefined, {a: 1} => undefined', () => {
+            expect(gmp._mapIndexableType(undefined, {a: 1}) === undefined).toBeTruthy();
+        });
+
+        it('{a: 1}, undefined => {a: 1}', () => {
+            expect(Tools.isSameObject(gmp._mapIndexableType({a: 1}, undefined), {a: 1})).toBeTruthy();
+        });
+
+        it('{a: 1}, null => null', () => {
+            expect(gmp._mapIndexableType({a: 1}, null) === null).toBeTruthy();
+        });
+
+    });
+
+
+    // **************************************************************************
     // _mapArrayOfObjects
     // **************************************************************************
 

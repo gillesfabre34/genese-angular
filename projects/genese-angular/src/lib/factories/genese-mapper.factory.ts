@@ -167,7 +167,7 @@ export class GeneseMapperFactory<T> {
 
 
     /**
-     * When an object haves a field named 'gnKey', that means that this object haves a model like this :
+     * When an object haves a field named 'gnIndexableKey', that means that this object haves a model like this :
      * public myProperty?: {
      *   [key: string]: {
      *       type: string
@@ -177,9 +177,20 @@ export class GeneseMapperFactory<T> {
      *           type: ''
      *      }
      *  };
-     * For each key of gnKey, this methodName returns the corresponding mapped object with the target model
+     * For each key of gnIndexableKey field, this method returns the corresponding mapped object with the target model
+     * Caution: param target should be defined
      */
-    _mapIndexableType(target: any, source: any): any {
+    _mapIndexableType(target: {[key: string]: any}, source: any): any {
+        if (!target) {
+            console.warn('Impossible to map indexable types with undefined target.');
+            return undefined;
+        }
+        if (source === undefined) {
+            return target;
+        }
+        if (source === null) {
+            return null;
+        }
         const mappedObject = {};
         for (const key of Object.keys(source)) {
             Object.assign(mappedObject, { [key]: this._diveMap(target, source[key])});
