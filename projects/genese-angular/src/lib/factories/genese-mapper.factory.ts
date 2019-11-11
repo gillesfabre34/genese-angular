@@ -139,7 +139,7 @@ export class GeneseMapperFactory<T> {
             let cloneTarget = Object.assign({}, target);
             for (const key of Object.keys(target)) {
                 if (key === 'gnIndexableKey') {
-                    cloneTarget = this._mapIndexableType(target[key], source);
+                    cloneTarget = this._mapIndexableType(target as unknown as IndexableType, source);
                 }
                 if (target[key] !== undefined) {
                     if (source[key] === null) {
@@ -168,32 +168,41 @@ export class GeneseMapperFactory<T> {
 
     /**
      * When an object haves a field named 'gnIndexableKey', that means that this object haves a model like this :
-     * public myProperty?: {
+     * {
      *   [key: string]: {
-     *       type: string
+     *       country: string
      *      }
      *   } = {
      *      gnIndexableKey: {
-     *           type: ''
+     *           country: ''
      *      }
      *  };
      * For each key of gnIndexableKey field, this method returns the corresponding mapped object with the target model
+     * For example, this method can return something like :
+     * {
+     *     fr: {
+     *         country: 'France'
+     *     },
+     *     en: {
+     *         country: 'England'
+     *     }
+     * }
      * Caution: param target should be defined
      */
-    _mapIndexableType(target: {[key: string]: any}, source: any): any {
-        if (!target) {
+    _mapIndexableType(target: IndexableType, source: any): any {
+        if (!target || !target.gnIndexableKey) {
             console.warn('Impossible to map indexable types with undefined target.');
             return undefined;
         }
         if (source === undefined) {
-            return target;
+            return target.gnIndexableKey;
         }
         if (source === null) {
             return null;
         }
         const mappedObject = {};
         for (const key of Object.keys(source)) {
-            Object.assign(mappedObject, { [key]: this._diveMap(target, source[key])});
+            Object.assign(mappedObject, { [key]: this._diveMap(target.gnIndexableKey, source[key])});
         }
         return mappedObject;
     }
@@ -289,4 +298,8 @@ export class GeneseMapperFactory<T> {
             return result;
         }
     }
+}
+
+export interface IndexableType {
+    gnIndexableKey: {[key: string]: any};
 }
