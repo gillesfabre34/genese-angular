@@ -6,17 +6,55 @@ describe('GeneseMapperFactory', () => {
 
     describe('_diveMap', () => {
 
-        it('target true, source true', () => {
-            expect(gmp._diveMap(true, true) === true).toBeTruthy();
+        describe('primitives', () => {
+
+            it('target true, source true => true', () => {
+                expect(gmp._diveMap(true, true) === true).toBeTruthy();
+            });
+
+            it('target true, source false => false', () => {
+                expect(gmp._diveMap(true, false) === false).toBeTruthy();
+            });
+
+            it('target string1, source 1 => "1"', () => {
+                expect(gmp._diveMap('string1', 1) === '1').toBeTruthy();
+            });
+
+            it('target true, source null => null', () => {
+                const result = gmp._diveMap(true, null);
+                expect(result === null).toBeTruthy();
+            });
+
+            it('target string1, source {a: 1} => string1', () => {
+                expect(gmp._diveMap('string1', {a: 1}) === 'string1').toBeTruthy();
+            });
         });
 
-        it('target true, source false', () => {
-            expect(gmp._diveMap(true, false) === false).toBeTruthy();
-        });
+        describe('not primitives', () => {
 
-        it('target true, source null', () => {
-            const result = gmp._diveMap(true, null);
-            expect(result === null).toBeTruthy();
+            it('target {a: 1}, source {a: 1} => {a: 1}', () => {
+                expect(Tools.isSameObject(gmp._diveMap({a: 1}, {a: 1}), {a: 1})).toBeTruthy();
+            });
+
+            it('target {a: 1}, source {} => {a: 1}', () => {
+                expect(Tools.isSameObject(gmp._diveMap({a: 1}, {}), {a: 1})).toBeTruthy();
+            });
+
+            it('target {a: 1}, source null => null', () => {
+                expect(gmp._diveMap({a: 1}, null) === null).toBeTruthy();
+            });
+
+            it('target {a: 1}, source undefined => {a: 1}', () => {
+                expect(Tools.isSameObject(gmp._diveMap({a: 1}, undefined), {a: 1})).toBeTruthy();
+            });
+
+            it('target {a: 1}, source {a: 2} => {a: 2}', () => {
+                expect(Tools.isSameObject(gmp._diveMap({a: 1}, {a: 2}), {a: 2})).toBeTruthy();
+            });
+
+            it('target {a: 1}, source {a: null} => {a: null}', () => {
+                expect(Tools.isSameObject(gmp._diveMap({a: 1}, {a: null}), {a: null})).toBeTruthy();
+            });
         });
     });
 

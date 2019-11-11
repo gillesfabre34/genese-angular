@@ -92,22 +92,26 @@ export class GeneseMapperFactory<T> {
                 delete data[newKey];
             }
         });
+        this._diveMap(undefined, 'zzz');
         return data;
     }
 
 
     /**
      * For a given object with U type (the target model), returns the source object mapped with the U model
+     * If source === null, it returns null
      */
     _diveMap<U>(target: U, source: any): any {
-        if (Tools.isPrimitive(target)) {
-            if (source === null) {
-                return source;
-            } else {
-                return Tools.isPrimitive(source) ? this._cast(target, source) : target;
-            }
+        if (source === undefined) {
+            return target;
+        } else if (source === null) {
+            return source;
         } else {
-            return this._mapNotPrimitive(target, source);
+            if (Tools.isPrimitive(target)) {
+                return Tools.isPrimitive(source) ? this._cast(target, source) : target;
+            } else {
+                return this._mapNotPrimitive(target, source);
+            }
         }
     }
 
