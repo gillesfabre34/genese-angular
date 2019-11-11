@@ -1,6 +1,6 @@
 import { Tools } from './tools.service';
 
-describe('Tools', () => {
+describe('TOOLS', () => {
 
     describe('isPrimitive', () => {
 

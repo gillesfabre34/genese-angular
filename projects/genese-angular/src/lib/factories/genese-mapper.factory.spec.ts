@@ -1,8 +1,12 @@
 import { GeneseMapperFactory } from './genese-mapper.factory';
 import { Tools } from '../services/tools.service';
 
-describe('GeneseMapperFactory', () => {
+describe('GENESE MAPPER FACTORY', () => {
     const gmp = new GeneseMapperFactory(Object);
+
+    // **************************************************************************
+    // _diveMap
+    // **************************************************************************
 
     describe('_diveMap', () => {
 
@@ -21,8 +25,7 @@ describe('GeneseMapperFactory', () => {
             });
 
             it('target true, source null => null', () => {
-                const result = gmp._diveMap(true, null);
-                expect(result === null).toBeTruthy();
+                expect(gmp._diveMap(true, null) === null).toBeTruthy();
             });
 
             it('target string1, source {a: 1} => string1', () => {
@@ -30,15 +33,9 @@ describe('GeneseMapperFactory', () => {
             });
         });
 
+        // **************************************************************************
+
         describe('not primitives', () => {
-
-            it('target {a: 1}, source {a: 1} => {a: 1}', () => {
-                expect(Tools.isSameObject(gmp._diveMap({a: 1}, {a: 1}), {a: 1})).toBeTruthy();
-            });
-
-            it('target {a: 1}, source {} => {a: 1}', () => {
-                expect(Tools.isSameObject(gmp._diveMap({a: 1}, {}), {a: 1})).toBeTruthy();
-            });
 
             it('target {a: 1}, source null => null', () => {
                 expect(gmp._diveMap({a: 1}, null) === null).toBeTruthy();
@@ -46,6 +43,14 @@ describe('GeneseMapperFactory', () => {
 
             it('target {a: 1}, source undefined => {a: 1}', () => {
                 expect(Tools.isSameObject(gmp._diveMap({a: 1}, undefined), {a: 1})).toBeTruthy();
+            });
+
+            it('target {a: 1}, source {a: 1} => {a: 1}', () => {
+                expect(Tools.isSameObject(gmp._diveMap({a: 1}, {a: 1}), {a: 1})).toBeTruthy();
+            });
+
+            it('target {a: 1}, source {} => {a: 1}', () => {
+                expect(Tools.isSameObject(gmp._diveMap({a: 1}, {}), {a: 1})).toBeTruthy();
             });
 
             it('target {a: 1}, source {a: 2} => {a: 2}', () => {
@@ -58,27 +63,79 @@ describe('GeneseMapperFactory', () => {
         });
     });
 
-    describe('_cast', () => {
+    // **************************************************************************
+    // _castStringAndNumbers
+    // **************************************************************************
+
+    describe('_castStringAndNumbers', () => {
+
+        it('undefined, {a: 1} => undefined', () => {
+            expect(gmp._castStringAndNumbers(undefined, {a: 1}) === undefined).toBeTruthy();
+        });
+
+        it('{a: 1}, undefined => undefined', () => {
+            expect(gmp._castStringAndNumbers({a: 1}, undefined) === undefined).toBeTruthy();
+        });
+
+        it('{a: 1}, null => null', () => {
+            expect(gmp._castStringAndNumbers({a: 1}, null) === null).toBeTruthy();
+        });
+
+        it('string1, string1 => string1', () => {
+            expect(gmp._castStringAndNumbers('string1', 'string1') === 'string1').toBeTruthy();
+        });
+
+        it('1, 1 => 1', () => {
+            expect(gmp._castStringAndNumbers(1, 1) === 1).toBeTruthy();
+        });
 
         it('string1, string2 => string2', () => {
-            expect(gmp._cast('string1', 'string2') === 'string2').toBeTruthy();
+            expect(gmp._castStringAndNumbers('string1', 'string2') === 'string2').toBeTruthy();
         });
 
         it('string1, 1 => "1"', () => {
-            expect(gmp._cast('string1', 1) === '1').toBeTruthy();
+            expect(gmp._castStringAndNumbers('string1', 1) === '1').toBeTruthy();
         });
 
         it('2, "1" => 1', () => {
-            expect(gmp._cast(2, '1') === 1).toBeTruthy();
+            expect(gmp._castStringAndNumbers(2, '1') === 1).toBeTruthy();
         });
 
-        it('{}, {a: 1} => {a: 1}', () => {
-            expect(Tools.isSameObject(gmp._cast({}, {a: 1}), {a: 1})).toBeTruthy();
+        it('{a: 1}, {a: 2} => undefined', () => {
+            expect(gmp._castStringAndNumbers({a: 1}, {a: 2}) === undefined).toBeTruthy();
         });
 
-        it('zzz, {a: 1} => {a: 1}', () => {
-            expect(Tools.isSameObject(gmp._cast('zzz', {a: 1}), {a: 1})).toBeTruthy();
+        // it('zzz, {a: 1} => {a: 1}', () => {
+        //     expect(Tools.isSameObject(gmp._castStringAndNumbers('zzz', {a: 1}), {a: 1})).toBeTruthy();
+        // });
+    });
+
+    // **************************************************************************
+    // _mapNotPrimitive
+    // **************************************************************************
+
+    describe('_mapNotPrimitive', () => {
+
+        it('target {a: 1}, source null => null', () => {
+            expect(gmp._mapNotPrimitive({a: 1}, null) === null).toBeTruthy();
         });
+
+        it('target {a: 1}, source {a: 1} => {a: 1}', () => {
+            expect(Tools.isSameObject(gmp._mapNotPrimitive({a: 1}, {a: 1}), {a: 1})).toBeTruthy();
+        });
+
+        it('target {a: 1}, source {} => {a: 1}', () => {
+            expect(Tools.isSameObject(gmp._mapNotPrimitive({a: 1}, {}), {a: 1})).toBeTruthy();
+        });
+
+        it('target {a: 1}, source {a: 2} => {a: 2}', () => {
+            expect(Tools.isSameObject(gmp._mapNotPrimitive({a: 1}, {a: 2}), {a: 2})).toBeTruthy();
+        });
+
+        it('target {a: 1}, source {a: null} => {a: null}', () => {
+            expect(Tools.isSameObject(gmp._mapNotPrimitive({a: 1}, {a: null}), {a: null})).toBeTruthy();
+        });
+
     });
 
 });
