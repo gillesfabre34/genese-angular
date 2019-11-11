@@ -174,14 +174,11 @@ export class GeneseMapperFactory<T> {
 
 
     /**
-     * If source and target are both string or number, we cast them into the target's type
+     * If source and target are both string or number, we cast source into the target's type and returns it.
      * This methodName adds a tolerance for http requests which returns numbers instead of strings and inversely
      */
     _cast(target: any, source: any): any {
-        // console.log('_cast target ' + target + ' / source ' + source);
-        if (typeof target === typeof source) {
-            return source;
-        } else if (typeof target === 'string' && typeof source === 'number') {
+        if (typeof target === 'string' && typeof source === 'number') {
             return  source.toString();
         } else if (typeof target === 'number' && typeof source === 'string') {
             return +source;
