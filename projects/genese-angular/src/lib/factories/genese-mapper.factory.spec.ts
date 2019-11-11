@@ -259,4 +259,5 @@ describe('GENESE MAPPER FACTORY', () => {
         });
 
     });
+
 });
