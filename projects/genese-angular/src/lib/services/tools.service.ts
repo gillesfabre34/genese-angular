@@ -19,25 +19,6 @@ export class Tools {
 
 
     /**
-     * Transform string format from PascalCase to snake-case
-     */
-    static toSnakeCase(word: string): string {
-        if (!word) {
-            return '';
-        }
-        let snake = word.charAt(0).toLowerCase();
-        for (let i = 1; i < word.length; i++) {
-            if (word.charAt(i) === word.charAt(i).toUpperCase()) {
-                snake += '-' + word.charAt(i).toLowerCase();
-            } else {
-                snake += word.charAt(i);
-            }
-        }
-        return snake;
-    }
-
-
-    /**
      * clone object with deep copy
      */
     static clone(model: any): any {
@@ -106,7 +87,7 @@ export class Tools {
             return true;
         } else {
             for (const key of Object.keys(obj1)) {
-                if (!obj2[key] && !!obj1[key]) {
+                if ((!obj2[key] && !!obj1[key]) || (!!obj2[key] && !obj1[key])) {
                     return false;
                 }
                 if (Array.isArray(obj1[key])) {

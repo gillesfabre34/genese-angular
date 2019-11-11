@@ -50,8 +50,8 @@ describe('GENESE MAPPER FACTORY', () => {
             expect(gmp._castStringAndNumbers({a: 1}, undefined) === undefined).toBeTruthy();
         });
 
-        it('{a: 1}, null => null', () => {
-            expect(gmp._castStringAndNumbers({a: 1}, null) === null).toBeTruthy();
+        it('{a: 1}, null => undefined', () => {
+            expect(gmp._castStringAndNumbers({a: 1}, null) === undefined).toBeTruthy();
         });
 
         it('string1, string1 => string1', () => {
@@ -79,7 +79,7 @@ describe('GENESE MAPPER FACTORY', () => {
         });
 
         it('{a: 1}, {a: 1} => {a: 1}', () => {
-            expect(Tools.isSameObject(gmp._castStringAndNumbers({a: 1}, {a: 1}), {a: 1})).toBeTruthy();
+            expect(gmp._castStringAndNumbers({a: 1}, {a: 1}) === undefined).toBeTruthy();
         });
 
         it('{a: 1}, {a: 2} => true', () => {
@@ -95,23 +95,23 @@ describe('GENESE MAPPER FACTORY', () => {
 
         describe('primitives', () => {
 
-            it('target true, source true => true', () => {
+            it('true, true => true', () => {
                 expect(gmp._diveMap(true, true) === true).toBeTruthy();
             });
 
-            it('target true, source false => false', () => {
+            it('true, false => false', () => {
                 expect(gmp._diveMap(true, false) === false).toBeTruthy();
             });
 
-            it('target string1, source 1 => "1"', () => {
+            it('string1, 1 => "1"', () => {
                 expect(gmp._diveMap('string1', 1) === '1').toBeTruthy();
             });
 
-            it('target true, source null => null', () => {
+            it('true, null => null', () => {
                 expect(gmp._diveMap(true, null) === null).toBeTruthy();
             });
 
-            it('target string1, source {a: 1} => string1', () => {
+            it('string1, {a: 1} => string1', () => {
                 expect(gmp._diveMap('string1', {a: 1}) === 'string1').toBeTruthy();
             });
         });
@@ -120,52 +120,38 @@ describe('GENESE MAPPER FACTORY', () => {
 
         describe('not primitives', () => {
 
-            it('target {a: 1}, source null => null', () => {
+            it('{a: 1}, null => null', () => {
                 expect(gmp._diveMap({a: 1}, null) === null).toBeTruthy();
             });
 
-            it('target {a: 1}, source undefined => {a: 1}', () => {
+            it('{a: 1}, undefined => {a: 1}', () => {
                 expect(Tools.isSameObject(gmp._diveMap({a: 1}, undefined), {a: 1})).toBeTruthy();
             });
 
-            it('target {a: 1}, source {a: 1} => {a: 1}', () => {
+            it('{a: 1}, {a: 1} => {a: 1}', () => {
                 expect(Tools.isSameObject(gmp._diveMap({a: 1}, {a: 1}), {a: 1})).toBeTruthy();
             });
 
-            it('target {a: 1}, source {} => {a: 1}', () => {
+            it('{a: ""}, {a: "1"} => {a: "1"}', async () => {
+                expect(Tools.isSameObject(gmp._diveMap({a: ''}, {a: '1'}), {a: '1'})).toBeTruthy();
+            });
+
+            it('{a: 1}, {} => {a: 1}', () => {
                 expect(Tools.isSameObject(gmp._diveMap({a: 1}, {}), {a: 1})).toBeTruthy();
             });
 
-            it('target {a: 1}, source {a: 2} => {a: 2}', () => {
+            it('{a: 1}, {a: 2} => {a: 2}', () => {
                 expect(Tools.isSameObject(gmp._diveMap({a: 1}, {a: 2}), {a: 2})).toBeTruthy();
             });
 
-            it('target {a: 1}, source {a: null} => {a: null}', () => {
+            it('{a: 1}, {a: null} => {a: null}', () => {
                 expect(Tools.isSameObject(gmp._diveMap({a: 1}, {a: null}), {a: null})).toBeTruthy();
             });
+
+            it('{country: ""}, {country: "Allemagne"} => {country: "Allemagne"}', () => {
+                expect(Tools.isSameObject(gmp._diveMap({country: ''}, {country: 'Allemagne'}), {country: 'Allemagne'})).toBeTruthy();
+            });
         });
-    });
-
-
-    // **************************************************************************
-    // _mapIndexableType
-    // **************************************************************************
-
-
-    describe('_mapIndexableType', () => {
-
-        it('undefined, {a: 1} => undefined', () => {
-            expect(gmp._mapIndexableType(undefined, {a: 1}) === undefined).toBeTruthy();
-        });
-
-        it('{a: 1}, undefined => {a: 1}', () => {
-            expect(Tools.isSameObject(gmp._mapIndexableType({a: 1}, undefined), {a: 1})).toBeTruthy();
-        });
-
-        it('{a: 1}, null => null', () => {
-            expect(gmp._mapIndexableType({a: 1}, null) === null).toBeTruthy();
-        });
-
     });
 
 
@@ -195,6 +181,40 @@ describe('GENESE MAPPER FACTORY', () => {
         it('[{a: 1}], [{a: 1}] => [{a: 1}]', () => {
             expect(Tools.isSameObject(gmp._mapArrayOfObjects([{a: 1}], [{a: 1}]), [{a: 1}])).toBeTruthy();
         });
+    });
+
+
+    // **************************************************************************
+    // _mapIndexableType
+    // **************************************************************************
+
+    const countriesSource = {
+        fr: {
+            country: 'Allemagne'
+        },
+        en: {
+            country: 'Germany'
+        }
+    };
+
+    describe('_mapIndexableType', () => {
+
+        it('undefined, {a: 1} => undefined', () => {
+            expect(gmp._mapIndexableType(undefined, {a: 1}) === undefined).toBeTruthy();
+        });
+
+        it('{a: 1}, undefined => {a: 1}', () => {
+            expect(Tools.isSameObject(gmp._mapIndexableType({a: 1}, undefined), {a: 1})).toBeTruthy();
+        });
+
+        it('{a: 1}, null => null', () => {
+            expect(gmp._mapIndexableType({a: 1}, null) === null).toBeTruthy();
+        });
+
+        it('{country: ""}, countriesSource => {fr: {country: "Allemagne"}}', () => {
+            expect(Tools.isSameObject(gmp._mapIndexableType({country: ''}, countriesSource), countriesSource)).toBeTruthy();
+        });
+
     });
 
 

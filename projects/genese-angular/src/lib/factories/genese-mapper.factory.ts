@@ -173,7 +173,7 @@ export class GeneseMapperFactory<T> {
      *       type: string
      *      }
      *   } = {
-     *      gnKey: {
+     *      gnIndexableKey: {
      *           type: ''
      *      }
      *  };
@@ -204,9 +204,6 @@ export class GeneseMapperFactory<T> {
      * In this case, returns true.
      */
     _areStringOrNumber(target: any, source: any): boolean {
-        if (!target || !source) {
-            return false;
-        }
         return ((typeof target === 'string' || typeof target === 'number') && (typeof source === 'number' || typeof source === 'string'));
     }
 
@@ -217,7 +214,7 @@ export class GeneseMapperFactory<T> {
      * Caution : params target and source should not be falsy values
      */
     _castStringAndNumbers(target: any, source: any): any {
-        if (!target || source === undefined) {
+        if ((typeof target !== 'string' && typeof target !== 'number') || source === undefined) {
             console.warn('Genese _castStringAndNumbers : source or target undefined');
             return undefined;
         } else if (source === null) {
@@ -226,8 +223,8 @@ export class GeneseMapperFactory<T> {
             return  source.toString();
         } else if (typeof target === 'number' && (typeof source === 'number' || typeof source === 'string')) {
             return +source;
-        } else if (Tools.isSameObject(target, source)) {
-            return source;
+        // } else if (Tools.isSameObject(target, source)) {
+        //     return source;
         } else {
             console.warn('Genese _castStringAndNumbers : impossible to cast this elements');
             return undefined;
