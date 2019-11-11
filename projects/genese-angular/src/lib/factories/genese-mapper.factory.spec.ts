@@ -4,6 +4,89 @@ import { Tools } from '../services/tools.service';
 describe('GENESE MAPPER FACTORY', () => {
     const gmp = new GeneseMapperFactory(Object);
 
+
+    // **************************************************************************
+    // _areStringOrNumber
+    // **************************************************************************
+
+    describe('_areStringOrNumber', () => {
+
+        it('1, undefined => false', () => {
+            expect(gmp._areStringOrNumber(1, undefined) === false).toBeTruthy();
+        });
+
+        it('undefined, 1 => false', () => {
+            expect(gmp._areStringOrNumber(undefined, 1) === false).toBeTruthy();
+        });
+
+        it('2, 1 => true', () => {
+            expect(gmp._areStringOrNumber(2, 1) === true).toBeTruthy();
+        });
+
+        it('2, "1" => true', () => {
+            expect(gmp._areStringOrNumber(2, '1') === true).toBeTruthy();
+        });
+
+        it('"2", 1 => true', () => {
+            expect(gmp._areStringOrNumber('2', 1) === true).toBeTruthy();
+        });
+
+        it('"2", "1" => true', () => {
+            expect(gmp._areStringOrNumber('2', '1') === true).toBeTruthy();
+        });
+    });
+
+    // **************************************************************************
+    // _castStringAndNumbers
+    // **************************************************************************
+
+    describe('_castStringAndNumbers', () => {
+
+        it('undefined, {a: 1} => undefined', () => {
+            expect(gmp._castStringAndNumbers(undefined, {a: 1}) === undefined).toBeTruthy();
+        });
+
+        it('{a: 1}, undefined => undefined', () => {
+            expect(gmp._castStringAndNumbers({a: 1}, undefined) === undefined).toBeTruthy();
+        });
+
+        it('{a: 1}, null => null', () => {
+            expect(gmp._castStringAndNumbers({a: 1}, null) === null).toBeTruthy();
+        });
+
+        it('string1, string1 => string1', () => {
+            expect(gmp._castStringAndNumbers('string1', 'string1') === 'string1').toBeTruthy();
+        });
+
+        it('1, 1 => 1', () => {
+            expect(gmp._castStringAndNumbers(1, 1) === 1).toBeTruthy();
+        });
+
+        it('string1, string2 => string2', () => {
+            expect(gmp._castStringAndNumbers('string1', 'string2') === 'string2').toBeTruthy();
+        });
+
+        it('string1, 1 => "1"', () => {
+            expect(gmp._castStringAndNumbers('string1', 1) === '1').toBeTruthy();
+        });
+
+        it('2, "1" => 1', () => {
+            expect(gmp._castStringAndNumbers(2, '1') === 1).toBeTruthy();
+        });
+
+        it('{a: 1}, {a: 2} => undefined', () => {
+            expect(gmp._castStringAndNumbers({a: 1}, {a: 2}) === undefined).toBeTruthy();
+        });
+
+        it('{a: 1}, {a: 1} => {a: 1}', () => {
+            expect(Tools.isSameObject(gmp._castStringAndNumbers({a: 1}, {a: 1}), {a: 1})).toBeTruthy();
+        });
+
+        it('{a: 1}, {a: 2} => true', () => {
+            expect(gmp._castStringAndNumbers({a: 1}, {a: 2}) === undefined).toBeTruthy();
+        });
+    });
+
     // **************************************************************************
     // _diveMap
     // **************************************************************************
@@ -63,56 +146,40 @@ describe('GENESE MAPPER FACTORY', () => {
         });
     });
 
+
     // **************************************************************************
-    // _castStringAndNumbers
+    // _mapArrayOfObjects
     // **************************************************************************
 
-    describe('_castStringAndNumbers', () => {
 
-        it('undefined, {a: 1} => undefined', () => {
-            expect(gmp._castStringAndNumbers(undefined, {a: 1}) === undefined).toBeTruthy();
+    describe('_mapArrayOfObjects', () => {
+
+        it('[{a: 1}], undefined => undefined', () => {
+            expect(gmp._mapArrayOfObjects([{a: 1}], undefined) === undefined).toBeTruthy();
         });
 
-        it('{a: 1}, undefined => undefined', () => {
-            expect(gmp._castStringAndNumbers({a: 1}, undefined) === undefined).toBeTruthy();
+        it('undefined, [{a: 1}] => undefined', () => {
+            expect(gmp._mapArrayOfObjects(undefined, [{a: 1}]) === undefined).toBeTruthy();
         });
 
-        it('{a: 1}, null => null', () => {
-            expect(gmp._castStringAndNumbers({a: 1}, null) === null).toBeTruthy();
+        it('[], [{a: 1}] => undefined', () => {
+            expect(gmp._mapArrayOfObjects([], [{a: 1}]) === undefined).toBeTruthy();
         });
 
-        it('string1, string1 => string1', () => {
-            expect(gmp._castStringAndNumbers('string1', 'string1') === 'string1').toBeTruthy();
+        it('[{a: 1}], [{a: 1}] => [{a: 1}]', () => {
+            expect(Tools.isSameObject(gmp._mapArrayOfObjects([{a: 1}], [{a: 1}]), [{a: 1}])).toBeTruthy();
         });
 
-        it('1, 1 => 1', () => {
-            expect(gmp._castStringAndNumbers(1, 1) === 1).toBeTruthy();
+        it('[{a: 1}], [{a: 1}] => [{a: 1}]', () => {
+            expect(Tools.isSameObject(gmp._mapArrayOfObjects([{a: 1}], [{a: 1}]), [{a: 1}])).toBeTruthy();
         });
-
-        it('string1, string2 => string2', () => {
-            expect(gmp._castStringAndNumbers('string1', 'string2') === 'string2').toBeTruthy();
-        });
-
-        it('string1, 1 => "1"', () => {
-            expect(gmp._castStringAndNumbers('string1', 1) === '1').toBeTruthy();
-        });
-
-        it('2, "1" => 1', () => {
-            expect(gmp._castStringAndNumbers(2, '1') === 1).toBeTruthy();
-        });
-
-        it('{a: 1}, {a: 2} => undefined', () => {
-            expect(gmp._castStringAndNumbers({a: 1}, {a: 2}) === undefined).toBeTruthy();
-        });
-
-        // it('zzz, {a: 1} => {a: 1}', () => {
-        //     expect(Tools.isSameObject(gmp._castStringAndNumbers('zzz', {a: 1}), {a: 1})).toBeTruthy();
-        // });
     });
+
 
     // **************************************************************************
     // _mapNotPrimitive
     // **************************************************************************
+
 
     describe('_mapNotPrimitive', () => {
 
@@ -148,36 +215,5 @@ describe('GENESE MAPPER FACTORY', () => {
             expect(Tools.isSameObject(gmp._mapNotPrimitive({a: [1]}, {a: {b: 2}}), {a: [1]})).toBeTruthy();
         });
 
-    });
-
-    // **************************************************************************
-    // _areStringOrNumber
-    // **************************************************************************
-
-    describe('_areStringOrNumber', () => {
-
-        it('1, undefined => false', () => {
-            expect(gmp._areStringOrNumber(1, undefined) === false).toBeTruthy();
-        });
-
-        it('undefined, 1 => false', () => {
-            expect(gmp._areStringOrNumber(undefined, 1) === false).toBeTruthy();
-        });
-
-        it('2, 1 => true', () => {
-            expect(gmp._areStringOrNumber(2, 1) === true).toBeTruthy();
-        });
-
-        it('2, "1" => true', () => {
-            expect(gmp._areStringOrNumber(2, '1') === true).toBeTruthy();
-        });
-
-        it('"2", 1 => true', () => {
-            expect(gmp._areStringOrNumber('2', 1) === true).toBeTruthy();
-        });
-
-        it('"2", "1" => true', () => {
-            expect(gmp._areStringOrNumber('2', '1') === true).toBeTruthy();
-        });
     });
 });

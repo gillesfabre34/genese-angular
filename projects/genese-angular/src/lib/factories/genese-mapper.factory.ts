@@ -225,9 +225,13 @@ export class GeneseMapperFactory<T> {
 
 
     /**
-     * Mapper to array of objects
+     * Mapper to array of objects by calling _diveMap for each object of the array
      */
-    _mapArrayOfObjects(target: any[], source: any[]): any[] {
+    _mapArrayOfObjects(target: {[key: string]: any}[], source: {[key: string]: any}[]): {[key: string]: any}[] {
+        if (!Array.isArray(target) || target.length === 0 || !Array.isArray(source)) {
+            console.warn('Impossible to map array of objects with undefined or empty array');
+            return undefined;
+        }
         const arrayOfObjects: any[] = [];
         const model = Tools.clone(target[0]);
         for (const element of source) {
