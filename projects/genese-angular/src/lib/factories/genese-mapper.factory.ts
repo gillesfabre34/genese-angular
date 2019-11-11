@@ -92,7 +92,6 @@ export class GeneseMapperFactory<T> {
                 delete data[newKey];
             }
         });
-        this._diveMap(undefined, 'zzz');
         return data;
     }
 
