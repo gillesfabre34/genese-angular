@@ -147,15 +147,12 @@ export class GeneseMapperFactory<T> {
                     } else if (source[key] === undefined) {
                         cloneTarget[key] = target[key];
                     } else {
-                        console.log('ELSE target[key]' + target[key]);
                         if (Array.isArray(target[key])) {
                             cloneTarget[key] = Array.isArray(source[key])
                                 ? this._mapArrayOfObjects(target[key], source[key])
                                 : cloneTarget[key];
                         } else {
-                            console.log('STRINGS source[key]' + source[key]);
                             if (this._areStringOrNumber(target[key], source[key])) {
-                                console.log('STRINGS target[key]' + target[key]);
                                 cloneTarget[key] = this._castStringAndNumbers(target[key], source[key]);
                             } else {
                                 cloneTarget[key] = this._diveMap(target[key], source[key]);
