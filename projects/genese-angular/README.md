@@ -23,7 +23,7 @@ Choose the version corresponding to your Angular version:
 
  Angular     | genese-angular
  ----------- | -------------------
- 8           | 0.0.1               
+ 8           | 0.0.19               
 
 ---
 
@@ -66,6 +66,7 @@ export const environment = {
     }
 };
 ```
+(replace the value of 'api' by the url you need)
 
 #### 2. Import Genese module
 
@@ -117,19 +118,128 @@ export class HomeComponent {
     public booksGenese: Genese<Books>;
 
     constructor(
-        private dialog: MatDialog,
         private geneseService: GeneseService,
-        public methodService: MethodService,
     ) {
         this.booksGenese = geneseService.getGeneseInstance(Books);
     }
 }
 ```
 
+## Models
+
+Genese needs to be able to find all the properties of your models. That's why it is imperative to set default values to all the properties, including inside nested objects.
+With this constraint, Genese will be able to return objects correctly formatted.
+* Example with primitives
+
+```
+export class Book = {
+    id ?= '';
+    codeNumbers: number[] = [0];
+    collectionNumber?: 0;
+    isAvailable?: true;
+    name ?= '';
+}
+```
+
+* Example with nested object
+
+```
+export class Book = {
+    id ?= '';
+    public editor?: {
+        name?: string,
+        place?: {
+            city?: string,
+            country?: string
+        }
+    } = {
+        name: '',
+        place: {
+            city: '',
+            country: ''
+        }
+    };
+}
+```
+
+### Indexable types
+
+Indexable types are properties like this : 
+```
+export class Book = {
+    [key: string]: string
+}
+```
+
+In this case, you don't know the names of the properties which will be returned by your http request. For example, you will receive objects like this :
+```
+{
+    en: 'The caves of steel',
+    fr: 'Les cavernes d\'acier'
+}
+``` 
+
+Now, suppose that your model have more complex indexable types, and that your http request will return you something like this :
+
+```
+{
+    en: {
+        country: 'England',
+        name: 'The caves of steel'
+    },
+    fr: {
+        country: 'France',
+        name: 'Les cavernes d\'acier'
+    }
+}
+```
+
+You will simply need to define your Genese model like this :
+```
+export class Book = {
+    [key: string]: {
+        country: string,
+        name: string
+    } = {
+        gnIndexableType: {
+            country: '',
+            name: ''
+        }
+    }
+}
+```
+
+The ``gnIndexableType`` key is a special key used by Genese to understand that you wait a response with indexableTypes.
+You'll need to use it every time you'll have to use indexable types.
+
 ## DataServices
 
-Genese provides many useful dataservices:
+Genese provides many useful dataservices. At first, let's have a look on "classic" CRUD operations: 
 
-#### 1. getOne(id: string, path?: string): Observable< T >
+### ***Classic CRUD operations***
 
-This method returns an element of type T for a given id and a given path (optional). The returned object is mapped with the T type.
+#### getOne(path: string, id?: string): Observable< T >
+
+This method returns an observable of element of type T for a given path and a given id (optional). The returned object is mapped with the T type.
+
+**Usage**
+Supposing that in your environment.ts, genese.api = http://localhost:3000`
+```
+this.booksGenese.getOne('/books', '1').subscribe((book: Book) => {
+     // book will be the data returned by the request http://localhost:3000/books/1 and formatted with type Book
+});
+```
+The next lines would do exactly the same :
+
+```
+this.booksGenese.getOne('/books', '1').subscribe((book: Book) => {
+     // book will be the data returned by the request http://localhost:3000/books/1 and formatted with type Book
+});
+```
+You can omit the param `id` when you want to call a request with custom path, including paths without `id`param at the end of the url :
+
+```
+this.booksGenese.getOne('/books/1?otherParam=2').subscribe((book: Book) => {
+     // book will be the data returned by the request http://localhost:3000/books/1?otherParam=2 and formatted with type Book
+});
+```
