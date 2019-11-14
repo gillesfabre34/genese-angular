@@ -164,20 +164,20 @@ export class Book = {
 
 ### Indexable types
 
-Indexable types are properties like this : 
-```
-export class Book = {
-    [key: string]: string
-}
-```
-
-In this case, you don't know the names of the properties which will be returned by your http request. For example, you will receive objects like this :
+Supposing that you wait http responses like this :
 ```
 {
     en: 'The caves of steel',
     fr: 'Les cavernes d\'acier'
 }
 ``` 
+Supposing too that you don't know in advance how many and which languages you will receive
+In this case, you'll need to use indexable types like this :
+```
+export class Book = {
+    [key: string]: string
+}
+```
 
 Now, suppose that your model have more complex indexable types, and that your http request will return you something like this :
 
@@ -226,20 +226,26 @@ This method returns an observable of element of type T for a given path and a gi
 Supposing that in your environment.ts, genese.api = http://localhost:3000`
 ```
 this.booksGenese.getOne('/books', '1').subscribe((book: Book) => {
-     // book will be the data returned by the request http://localhost:3000/books/1 and formatted with type Book
+     // book will be the data returned by 
+     // the request http://localhost:3000/books/1
+     // and formatted with type Book
 });
 ```
 The next lines would do exactly the same :
 
 ```
 this.booksGenese.getOne('/books', '1').subscribe((book: Book) => {
-     // book will be the data returned by the request http://localhost:3000/books/1 and formatted with type Book
+     // book will be the data returned by 
+     // the request http://localhost:3000/books/1
+     // and formatted with type Book
 });
 ```
 You can omit the param `id` when you want to call a request with custom path, including paths without `id`param at the end of the url :
 
 ```
 this.booksGenese.getOne('/books/1?otherParam=2').subscribe((book: Book) => {
-     // book will be the data returned by the request http://localhost:3000/books/1?otherParam=2 and formatted with type Book
+     // book will be the data returned by 
+     // the request http://localhost:3000/books/1?otherParam=2
+     // and formatted with type Book
 });
 ```
