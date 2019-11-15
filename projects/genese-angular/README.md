@@ -131,7 +131,7 @@ A Genese good practice is to set all the properties of your models as optional. 
 ### Primitives
 * Example with primitives
 
-```
+```ts
 export class Book = {
     id ?= '';
     codeNumbers: number[] = [0];
@@ -144,7 +144,7 @@ export class Book = {
 ### Nested objects
 * Example with nested object
 
-```
+```ts
 export class Book = {
     id ?= '';
     public editor?: {
@@ -165,16 +165,17 @@ export class Book = {
 
 ### Indexable types
 
-Supposing that you wait http responses like this 
-```
+Suppose that you wait http responses like this 
+```ts
 {
     en: 'The caves of steel',
     fr: 'Les cavernes d\'acier'
 }
 ``` 
-and supposing that you don't know in advance how many properties will have your response. In this example, you don't know in advance how many translations you will receive and in which languages.
+and suppose that you don't know in advance how many properties will have your response. In this example, you don't know in advance how many translations you will receive and in which languages.
 In this case, you need to use indexable types like this :
-```
+
+```ts
 export class Book = {
     [key: string]: string
 }
@@ -182,7 +183,7 @@ export class Book = {
 This is the simplest example of indexable types.
 Now, suppose that your http request returns something more complex like this :
 
-```
+```ts
 {
     en: {
         country: 'England',
@@ -196,7 +197,7 @@ Now, suppose that your http request returns something more complex like this :
 ```
 
 In this case, you simply need to define your Genese model like this :
-```
+```ts
 export class Book = {
     [key: string]: {
         country?: string,
@@ -216,7 +217,7 @@ You'll need to use it every time you'll have to use indexable types.
 ### Translations
 
 Supposing that you have some fields which are translated in many languages, you'll probably want to have a GET request which will return the object translated in one of these languages. For example, if your data are like this 
-```
+```ts
 {
     en: {
         country: 'England',
@@ -230,7 +231,7 @@ Supposing that you have some fields which are translated in many languages, you'
 ```
 you may want to receive a response with only the french language, like this :
 
-```
+```ts
 {
     country: 'France',
     name: 'Les cavernes d\'acier'
@@ -239,7 +240,7 @@ you may want to receive a response with only the french language, like this :
 Genese can do that for you. You will need to use the ``translate()`` method, which is described [here](#translatetdata-t-language-string-t).
 To be able to do that, you need to construct your model like this :
 
-```
+```ts
 export class Book = {
     gnTranslate: {
         [key: string]: {
@@ -263,14 +264,52 @@ Genese provides many useful services. At first, let's have a look on "classic" C
 
 ### ***Classic CRUD operations***
 
-#### getOne(path: string, id?: string): Observable< T >
+#### getAll<T>(path: string, params?: GnRequestParams): Observable<GetAllResponse<T> | T[]>
+
+This method is used to receive a list of objects with T type, with or without pagination.
+Suppose that in your environment.ts, genese.api = http://localhost:3000` and that your model looks like this :
+
+```ts
+export class Book {
+    id ?= '';
+    name ?= '';
+}
+```
+`
+* **getAll() without pagination**`
+
+If your http GET request returns a simple list of objects, without pagination, the response will probably be like this:
+```ts
+[
+    {
+        id: '1',
+        name: 'The caves of steel'
+    },
+    {
+        id: '2',
+        name: 'The robots of dawn'
+    },
+]
+```
+In this case, the ``getAll()`` method simply returns an observable of array of objects formatted with T type. In this example, this method will return an array with two objects of Book type.
+
+* **getAll() with pagination**`
+
+Now, suppose that your GET request returns a paginated list of T objects. Genese is able to return this list with pagination formatted with T type.
+For that, you need to configure your Genese environment by specifying the pagination parameters.
+
+Suppose that your http response is like this 
+```
+```
+
+#### getOne<T>(path: string, id?: string): Observable< T >
 
 This method returns an observable of element of type T for a given path and a given id (optional). The returned object is mapped with the T type, which is the type of your `GeneseService`.
 
 **Usage**
 
 Supposing that in your environment.ts, genese.api = http://localhost:3000`
-```
+```ts
 export class HomeComponent {
 
     public booksGenese: Genese<Books>;
@@ -290,7 +329,7 @@ You can omit the param `id` when you want to call a request with custom path, in
 
 * Example 1 (which will do exactly the same than previously) :
 
-```
+```ts
 this.booksGenese.getOne('/books/1').subscribe((book: Book) => {
      // book is the data returned by 
      // the request http://localhost:3000/books/1
@@ -298,7 +337,7 @@ this.booksGenese.getOne('/books/1').subscribe((book: Book) => {
 });
 ```
 * Example 2
-```
+```ts
 this.booksGenese.getOne('/books/1?otherParam=2').subscribe((book: Book) => {
      // book will be the data returned by 
      // the request http://localhost:3000/books/1?otherParam=2
@@ -308,11 +347,11 @@ this.booksGenese.getOne('/books/1?otherParam=2').subscribe((book: Book) => {
 
 ### Other Genese services
 
-#### translate<T>(data: T, language: string): T
+#### translate(data: object, language: string): object
 
 This service is used to translate in a specific language a property which is translated in many languages.
 For example, if getOne() returns an object of T type like this :
-```
+```ts
 {
     en: {
         country: 'England',
@@ -326,7 +365,7 @@ For example, if getOne() returns an object of T type like this :
 ```
 you may want to transform this object in a format like this :
 
-```
+```ts
 {
     country: 'France',
         name: 'Les cavernes d\'acier'
@@ -335,7 +374,7 @@ you may want to transform this object in a format like this :
 ```
 
 To do that, your model must be like this :
-```
+```ts
 export class Book = {
     gnTranslate: {
         [key: string]: {
@@ -354,7 +393,7 @@ export class Book = {
 
 In your component, you just need to combine `getOne()` with `translate()` and you'll receive an Observable of the object correctly formatted in the required language :
 
-```
+```ts
 import { Books } from './books.model';
 import { GeneseService } from 'genese-angular';
 

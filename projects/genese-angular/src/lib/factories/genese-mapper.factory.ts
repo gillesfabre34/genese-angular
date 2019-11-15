@@ -276,9 +276,9 @@ export class GeneseMapperFactory<T> {
      *     country: 'Allemagne'
      * }
      */
-    public translate<U = T>(data: U, language: string): U {
-        if (!language) {
-            console.error('No data or no language : impossible to get element');
+    public translate(data: object, language: string): object {
+        if (!data || !language) {
+            console.error('No data or no language : impossible to translate element');
             return undefined;
         } else {
             const result = Tools.clone(data);
