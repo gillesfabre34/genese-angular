@@ -32,25 +32,65 @@ export class Genese<T> {
 
 
     // --------------------------------------------------
-    //                     METHODS
+    //                   CRUD METHODS
     // --------------------------------------------------
 
 
     /**
-     * Get one element of the T class (or the U class if the uConstructor param is defined)
+     * Create an object and return an Observable of the created object with T type
      */
-    getOne(path: string, id?: string): Observable<T> {
+    create(path: string, body?: object, options?: RequestOptions): Observable<T | any> {
+        body = Tools.default(body, {});
+        options = Tools.default(options, {});
+        options.headers = Tools.default(options.headers, {'Content-Type': 'application/json'});
+        const requestOptions: any = Object.assign(options, {observe: 'body'});
+        const url = this.apiRoot(path);
+        return this.http.post(url, body, requestOptions)
+            .pipe(
+                map((result) => {
+                    if (options && options.mapData === false) {
+                        return result;
+                    } else {
+                        return this.geneseMapperService.mapToObject(result);
+                    }
+                })
+            );
+    }
+
+
+    /**
+     * Delete an element and returns success or failed status
+     */
+    delete(path: string, id?: string, options?: RequestOptions): Observable<ResponseStatus> {
         if (!path) {
-            console.error('No path : impossible to get element');
+            console.error('Undefined path : impossible to delete element');
             return of(undefined);
         }
         const url = this.apiRoot(path, id);
-        return this.http.get(url, {})
+        return this.http.delete(url, {observe: 'response'})
             .pipe(
-                map((data: any) => {
-                    return this.geneseMapperService.mapToObject<T>(data);
+                map((response: HttpResponse<any>) => {
+                    return response && response.ok === true ? ResponseStatus.SUCCESS : ResponseStatus.FAILED;
                 })
             );
+    }
+
+    /**
+     * Returns mapped object using fetch method
+     */
+    async fetch(path: string, method: RequestMethod, requestInit?: RequestInit): Promise<T> {
+        if (!method || !path) {
+            console.error('Incorrect parameters : impossible to send request');
+            return Promise.reject('Incorrect parameters : impossible to send request');
+        }
+        const url = this.apiRoot(path);
+        const response = await fetch(url, requestInit);
+        const data = await response.clone().json();
+        if (method === RequestMethod.DELETE) {
+            return this.geneseMapperService.mapToObject<T>(data ? data.body : undefined);
+        } else {
+            return this.geneseMapperService.mapToObject<T>(data);
+        }
     }
 
     /**
@@ -130,18 +170,55 @@ export class Genese<T> {
     }
 
     /**
-     * Create an object and return an Observable of the created object with T type
+     * Get one element of the T class (or the U class if the uConstructor param is defined)
      */
-    create(path: string, body?: object, options?: RequestOptions): Observable<T> {
-        body = Tools.default(body, {});
-        options = Tools.default(options, {});
-        options.headers = Tools.default(options.headers, {'Content-Type': 'application/json'});
-        const requestOptions: any = Object.assign(options, {observe: 'body'});
-        const url = this.apiRoot(path);
-        return this.http.post(url, body, requestOptions)
+    getOne(path: string, id?: string): Observable<T> {
+        if (!path) {
+            console.error('No path : impossible to get element');
+            return of(undefined);
+        }
+        const url = this.apiRoot(path, id);
+        return this.http.get(url, {})
             .pipe(
-                map((result) => {
-                    return this.geneseMapperService.mapToObject(result);
+                map((data: any) => {
+                    return this.geneseMapperService.mapToObject<T>(data);
+                })
+            );
+    }
+
+    /**
+     * Get one element of the T class (or the U class if the uConstructor param is defined)
+     */
+    request(path: string, method: RequestMethod, options?: RequestOptions): Observable<T | any> {
+        if (!method || !path) {
+            console.error('Incorrect parameters : impossible to send request');
+            return of(undefined);
+        }
+        options = Tools.default(options, {});
+        if (!options.headers
+            && (method === RequestMethod.POST || method === RequestMethod.PUT || method === RequestMethod.PATCH)) {
+            options.headers = {'Content-Type': 'application/json'};
+        }
+        if (!options.observe && method === RequestMethod.DELETE) {
+            options.observe = 'response';
+        }
+        const url = this.apiRoot(path, options.id);
+        return this.http.request(method, url, options)
+            .pipe(
+                map((result: any) => {
+                    if (method === RequestMethod.DELETE) {
+                        if (options && options.mapData === false) {
+                            return result;
+                        } else {
+                            return this.geneseMapperService.mapToObject<T>(result ? result.body : undefined);;
+                        }
+                    } else {
+                        if (options && options.mapData === false) {
+                            return result;
+                        } else {
+                            return this.geneseMapperService.mapToObject(result);
+                        }
+                    }
                 })
             );
     }
@@ -149,7 +226,7 @@ export class Genese<T> {
     /**
      * Update an element with T type
      */
-    update(path: string, id?: string, body?: object, options?: RequestOptions): Observable<T> {
+    update(path: string, id?: string, body?: object, options?: RequestOptions): Observable<T | any> {
         if (!id && !path) {
             console.error('Error updating element: undefined id or incorrect path');
             return of(undefined);
@@ -162,28 +239,18 @@ export class Genese<T> {
         return this.http.put( url, body, requestOptions)
             .pipe(
                 map(result => {
-                    return this.geneseMapperService.mapToObject(result);
+                    if (options && options.mapData === false) {
+                        return result;
+                    } else {
+                        return this.geneseMapperService.mapToObject(result);
+                    }
                 })
             );
     }
 
-
-    /**
-     * Delete an element
-     */
-    delete(path: string, id?: string, options?: RequestOptions): Observable<ResponseStatus> {
-        if (!path) {
-            console.error('Undefined path : impossible to delete element');
-            return of(undefined);
-        }
-        const url = this.apiRoot(path, id);
-        return this.http.delete(url, {observe: 'response'})
-            .pipe(
-                map((response: HttpResponse<any>) => {
-                    return response && response.ok === true ? ResponseStatus.SUCCESS : ResponseStatus.FAILED;
-                })
-            );
-    }
+    // --------------------------------------------------
+    //                   OTHER METHODS
+    // --------------------------------------------------
 
     /**
      * Get the root path of the api
@@ -210,54 +277,6 @@ export class Genese<T> {
         } else {
             return this.geneseMapperService.translate(data, language);
         }
-    }
-
-    /**
-     * Returns mapped object using fetch method
-     */
-    async fetch(path: string, method: RequestMethod, requestInit?: RequestInit): Promise<T> {
-        if (!method || !path) {
-            console.error('Incorrect parameters : impossible to send request');
-            return Promise.reject('Incorrect parameters : impossible to send request');
-        }
-        const url = this.apiRoot(path);
-        const response = await fetch(url, requestInit);
-        const data = await response.clone().json();
-        if (method === RequestMethod.DELETE) {
-            return this.geneseMapperService.mapToObject<T>(data ? data.body : undefined);
-        } else {
-            return this.geneseMapperService.mapToObject<T>(data);
-        }
-    }
-
-    /**
-     * Get one element of the T class (or the U class if the uConstructor param is defined)
-     */
-    request(path: string, method: RequestMethod, options?: RequestOptions): Observable<T> {
-        if (!method || !path) {
-            console.error('Incorrect parameters : impossible to send request');
-            return of(undefined);
-        }
-        options = Tools.default(options, {});
-        if (!options.headers
-            && (method === RequestMethod.POST || method === RequestMethod.PUT || method === RequestMethod.PATCH)) {
-            options.headers = {'Content-Type': 'application/json'};
-        }
-        if (!options.observe && method === RequestMethod.DELETE) {
-            options.observe = 'response';
-        }
-        const url = this.apiRoot(path, options.id);
-        return this.http.request(method, url, options)
-            .pipe(
-                map((data: any) => {
-                    if (method === RequestMethod.DELETE) {
-                        return this.geneseMapperService.mapToObject<T>(data ? data.body : undefined);
-
-                    } else {
-                        return this.geneseMapperService.mapToObject<T>(data);
-                    }
-                })
-            );
     }
 
 }

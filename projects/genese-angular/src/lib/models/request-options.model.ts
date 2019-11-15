@@ -6,6 +6,7 @@ export class RequestOptions {
         [header: string]: string | string[];
     };
     id?: string;
+    mapData ?= true;
     observe?: HttpObserve ;
     params?: HttpParams | {
         [param: string]: string | string[];
