@@ -5,7 +5,6 @@ import { GnRequestParams, GetAllResponse } from '../models/get-all.params.model'
 import { TConstructor } from '../models/t-constructor.model';
 import { GeneseMapperFactory } from './genese-mapper.factory';
 import { Tools } from '../services/tools.service';
-import { Language } from '../enums/language';
 import { GeneseEnvironmentService } from '../services/genese-environment.service';
 import { ResponseStatus } from '../enums/response-status';
 import { RequestMethod } from '../enums/request-method';
@@ -202,7 +201,7 @@ export class Genese<T> {
     /**
      * Translate data for a given language
      */
-    translate<U = T>(data: U, language: Language): U {
+    translate<U = T>(data: U, language: string): U {
         if (!language) {
             console.error('No data or no language : impossible to get element');
             return undefined;

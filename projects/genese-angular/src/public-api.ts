@@ -31,7 +31,6 @@ export * from './lib/models/request-options.model';
 export * from './lib/models/t-constructor.model';
 
 // Enums
-export * from './lib/enums/language';
 export * from './lib/enums/request-method';
 export * from './lib/enums/response-status';
 

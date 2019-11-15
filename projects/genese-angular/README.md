@@ -8,7 +8,8 @@ Simple example using genese: https://github.com/gillesfabre34/genese-angular-dem
 ## Table of Contents
 * [Installation](#installation)
 * [Usage](#usage)
-* [DataServices](#dataservices)
+* [Models](#models)
+* [Services](#services)
 
 
 ## Installation
@@ -129,6 +130,7 @@ export class HomeComponent {
 
 Genese needs to be able to find all the properties of your models. That's why it is imperative to set default values to all the properties, including inside nested objects.
 With this constraint, Genese will be able to return objects correctly formatted.
+### Primitives
 * Example with primitives
 
 ```
@@ -141,6 +143,7 @@ export class Book = {
 }
 ```
 
+### Nested objects
 * Example with nested object
 
 ```
@@ -212,9 +215,54 @@ export class Book = {
 The ``gnIndexableType`` key is a special key used by Genese to understand that you wait a response with indexableTypes.
 You'll need to use it every time you'll have to use indexable types.
 
-## DataServices
+### Translations
 
-Genese provides many useful dataservices. At first, let's have a look on "classic" CRUD operations: 
+Supposing that you have some fields which are translated in many languages, you'll probably want to have a GET request which will return the object translated in one of these languages. For example, if your data are like this 
+```
+{
+    en: {
+        country: 'England',
+        name: 'The caves of steel'
+    },
+    fr: {
+        country: 'France',
+        name: 'Les cavernes d\'acier'
+    }
+}
+```
+you may want to receive a response with only the french language, like this :
+
+```
+{
+    country: 'France',
+        name: 'Les cavernes d\'acier'
+    }
+}
+```
+Genese can do that for you. You will need to use the ``translate<U = T>(data: U, language: Language)`` method, which is described [here](#translatetdata-t-language-string-t).
+To be able to do that, you need to construct your model like this :
+
+```
+export class Book = {
+    gnTranslate: {
+        [key: string]: {
+            country: string,
+            name: string
+        }
+    } = {
+        gnIndexableType: {
+            country: '',
+            name: ''
+        }
+    }
+}
+```
+The ``gnTranslate`` key is a special key used by Genese to understand that some fields can be translated.
+You'll need to use it every time you'll have to use translations. The usage of ``gnIndexableType`` is described [here](#indexable-types).
+
+## Services
+
+Genese provides many useful services. At first, let's have a look on "classic" CRUD operations: 
 
 ### ***Classic CRUD operations***
 
@@ -249,3 +297,77 @@ this.booksGenese.getOne('/books/1?otherParam=2').subscribe((book: Book) => {
      // and formatted with type Book
 });
 ```
+
+### Other Genese services
+
+#### translate<T>(data: T, language: string): T
+
+This service is used to translate in a specific language a property which is translated in many languages.
+For example, if getOne() returns an object of T type like this :
+```
+{
+    en: {
+        country: 'England',
+        name: 'The caves of steel'
+    },
+    fr: {
+        country: 'France',
+        name: 'Les cavernes d\'acier'
+    }
+}
+```
+you may want to transform this object in a format like this :
+
+```
+{
+    country: 'France',
+        name: 'Les cavernes d\'acier'
+    }
+}
+```
+
+To do that, your model must be like this :
+```
+export class Book = {
+    gnTranslate: {
+        [key: string]: {
+            country: string,
+            name: string
+        }
+    } = {
+        gnIndexableType: {
+            country: '',
+            name: ''
+        }
+    }
+}
+```
+``gnTranslated`` and ``gnIndexableType`` are specific Genese keywords, described more in detail [here](#translatetdata-t-language-string-t) and [here](#indexable-types).
+
+In your component, you just need to combine `getOne()` with `translate()` and you'll receive an Observable of the object correctly formatted in the required language :
+
+```
+import { Books } from './books.model';
+import { GeneseService } from 'genese-angular';
+
+@Component({
+    selector: 'app-book',
+    templateUrl: './book.component.html',
+    styleUrls: ['./book.component.scss']
+})
+export class BookComponent {
+
+    public bookTranslated: Book;
+
+    constructor(private geneseService: GeneseService) {
+        this.booksGenese = geneseService.getGeneseInstance(Books);
+    }
+    
+    --------------------------------
+
+    this.booksGenese.getOne('/books', 1).subscribe((book: Book) => {
+        this.bookTranslated = this.booksGenese.translate(book, 'fr');
+    });
+}
+```
+
