@@ -1,15 +1,26 @@
 
-export interface GnRequestParams {
-    page?: number;
-    limit?: number;
-    sort?: string;
-    order?: 'asc' | 'desc';
-    filters?: {
-        [key: string]: string
-    };
+export interface GetAllWithPaginationParams {
     extract?: {
         [key: string]: any
     };
+    filters?: {
+        [key: string]: string
+    };
+    order?: 'asc' | 'desc';
+    pageIndex: number;
+    pageSize: number;
+    sort?: string;
+}
+
+export interface GetAllParams {
+    extract?: {
+        [key: string]: any
+    };
+    filters?: {
+        [key: string]: string
+    };
+    order?: 'asc' | 'desc';
+    sort?: string;
 }
 
 export interface GetAllResponse<T> {

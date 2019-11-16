@@ -295,11 +295,78 @@ In this case, the ``getAll()`` method simply returns an observable of array of o
 
 * **getAll() with pagination**`
 
-Now, suppose that your GET request returns a paginated list of T objects. Genese is able to return this list with pagination formatted with T type.
-For that, you need to configure your Genese environment by specifying the pagination parameters.
+Now, suppose that you want to display a list of books which are in your library, and that you want to paginate it with a page size of 5 elements. Suppose too that you have 231 books in your library, and that you want to display the third page of your list (so pageIndex = 2).
+Usually, you will send a GET request like this :
 
-Suppose that your http response is like this 
+```ts
+    http://localhost:3000/books?pageIndex=2&pageSize=5
 ```
+
+The http response will be probably like this :
+
+```ts
+{
+    totalResults: 231,
+    results: [
+        {
+            id: '10',
+            name: 'The caves of steel'
+        },
+        {
+            id: '11',
+            name: 'The robots of dawn'
+        },
+        {
+            id: '12',
+            name: 'Robots and Empire'
+        },
+        {
+            id: '13',
+            name: 'The Currents of Space'
+        },
+        {
+            id: '14',
+            name: 'The Stars'
+        }
+    ]
+}
+```
+
+The Genese method ``getAll()`` is able to return very simply this kind of paginated list and in same time to format each element with type Book.
+You will just need to call this method like this :
+
+`books.component.ts`
+```ts
+export class BooksComponent {
+
+    public booksGenese: Genese<Books>;
+
+    constructor(private geneseService: GeneseService) {
+        this.booksGenese = geneseService.getGeneseInstance(Books);
+    }
+
+    this.booksGenese.getAll('/books', {pageIndex: 2, pageSize: 5}).subscribe((response: { totalResults: number, results: Book[]) => {
+         // The GET request called is http://localhost:3000/books?pageIndex=2&pageSize=4
+         // In this case, totalResults = 231 and results is an array of 5 books, typed with your Book model
+    });
+}
+```
+
+For that, you need at first to configure your Genese environment by specifying the pagination parameters.
+
+`environment.ts`
+```ts
+export const environment = {
+    genese: {
+        api: 'http://localhost:3000', // The url of your API
+        pagination: {
+            pageIndex: 'pageIndex',
+            pageSize: 'pageSize',
+            results: 'results',
+            totalResults: 'totalResults'
+        }
+    }
+};
 ```
 
 #### getOne<T>(path: string, id?: string): Observable< T >
@@ -310,7 +377,7 @@ This method returns an observable of element of type T for a given path and a gi
 
 Supposing that in your environment.ts, genese.api = http://localhost:3000`
 ```ts
-export class HomeComponent {
+export class BooksComponent {
 
     public booksGenese: Genese<Books>;
 

@@ -2,10 +2,14 @@ export class GeneseConfig {
     api: string;
     extract?: string;
     pagination?: {
-        limit: string,
-        page: string
+        pageIndex: string,
+        pageSize: string,
+        results: string,
+        totalResults: string
     } = {
-        page: 'gnPage',
-        limit: 'gnLimit'
+        pageIndex: 'gnPageIndex',
+        pageSize: 'gnPageSize',
+        results: 'gnResults',
+        totalResults: 'gnTotalResults'
     };
 }

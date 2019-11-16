@@ -10,9 +10,11 @@ export class GeneseEnvironmentService {
     // --------------------------------------------------
 
     public api: string;
-    public gnExtract: string;
-    public gnPage: string;
-    public gnLimit: string;
+    public extract: string;
+    public pageIndex: string;
+    public pageSize: string;
+    public results: string;
+    public totalResults: string;
 
     constructor() { }
 
@@ -26,10 +28,12 @@ export class GeneseEnvironmentService {
     setEnvironment(config: GeneseConfig) {
         if (config) {
             this.api = Tools.default(config.api, 'http://localhost:3000');
-            this.gnExtract = Tools.default(config.extract, 'gnExtract');
+            this.extract = Tools.default(config.extract, 'gnExtract');
             if (config.pagination) {
-                this.gnPage = Tools.default(config.pagination.page, 'gnPage');
-                this.gnLimit = Tools.default(config.pagination.limit, 'gnLimit');
+                this.pageIndex = Tools.default(config.pagination.pageIndex, 'gnPageIndex');
+                this.pageSize = Tools.default(config.pagination.pageSize, 'gnPageSize');
+                this.results = Tools.default(config.pagination.results, 'gnPageResults');
+                this.totalResults = Tools.default(config.pagination.totalResults, 'gnPageTotalResults');
             }
         }
     }

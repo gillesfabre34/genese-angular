@@ -1,7 +1,7 @@
 import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
-import { GnRequestParams, GetAllResponse } from '../models/get-all.params.model';
+import { GetAllWithPaginationParams, GetAllResponse, GetAllParams } from '../models/get-all.params.model';
 import { TConstructor } from '../models/t-constructor.model';
 import { GeneseMapperFactory } from './genese-mapper.factory';
 import { Tools } from '../services/tools.service';
@@ -54,49 +54,54 @@ export class Genese<T> {
     }
 
     /**
-     * Get one element of the T class (or the U class if the uConstructor param is defined)
+     * Get all elements of array of data returned by GET request and map them with T type
      */
-    getOneExtract<U>(path: string, id: string, uConstructor: TConstructor<U>): Observable<U> {
-        if (!id || !uConstructor) {
-            console.error('No id or no uConstructor : impossible to get element');
-            return of(undefined);
-        }
-        let httpParams = new HttpParams();
-        httpParams = httpParams.set('gnExtract', JSON.stringify(new uConstructor()));
-        const options = {params: httpParams};
-        return this.http.get(this.apiRoot(path, id), options)
-            .pipe(
-                map((data: any) => {
-                    return this.geneseMapperService.mapToObject<U>(data, uConstructor) as U;
-                })
-            );
-    }
-
-    /**
-     * Get all elements
-     * If the http response format have this format, it returns paginated response with this format :
-     * {
-     *      totalResults?: number;
-     *      results: any;
-     * }
-     *
-     * If not, it returns T[] object
-     */
-    getAll<U = T>(path: string, params?: GnRequestParams): Observable<GetAllResponse<U> | U[]> {
+    getAll(path: string, params?: GetAllParams): Observable<T[]> {
         let httpParams = new HttpParams();
         if (!path) {
             console.error('No path : impossible to get elements');
             return of(undefined);
         }
+        if (params && params.filters) {
+            for (const key of Object.keys(params.filters)) {
+                if (params.filters[key]) {
+                    httpParams = httpParams.set(key, params.filters[key].toString());
+                }
+            }
+        }
+        const options = {params: httpParams};
+        const url = this.apiRoot(path);
+        return this.http.get(url, options).pipe(
+            map((response: any) => {
+                return response ? this.geneseMapperService.mapGetAllResults<T>(response) : [];
+            })
+        );
+    }
+
+    /**
+     * Get all elements
+     * If the http response have paginated format, it returns paginated response with this format :
+     * {
+     *      totalResults?: number;
+     *      results: T[];
+     * }
+     */
+    getAllWithPagination(path: string, params: GetAllWithPaginationParams): Observable<GetAllResponse<T>> {
+        let httpParams = new HttpParams();
+        if (!path) {
+            console.error('No path : impossible to get paginated elements');
+            return of(undefined);
+        }
+        if (!params || !params.pageSize) {
+            console.error('Incorrect parameters : impossible to get paginated elements. The parameter pageSize must be defined.');
+            return of(undefined);
+        }
         if (params) {
-            if (params.page !== undefined) {
-                httpParams = httpParams.set(this.geneseEnvironment.gnPage, params.page.toString());
+            if (params.pageIndex !== undefined) {
+                httpParams = httpParams.set(this.geneseEnvironment.pageIndex, params.pageIndex.toString());
             }
-            if (params.limit !== undefined) {
-                httpParams = httpParams.set(this.geneseEnvironment.gnLimit, params.limit.toString());
-            }
-            if (params.extract !== undefined) {
-                httpParams = httpParams.set(this.geneseEnvironment.gnExtract, params.extract.toString());
+            if (params.pageSize !== undefined) {
+                httpParams = httpParams.set(this.geneseEnvironment.pageSize, params.pageSize.toString());
             }
             if (params.filters) {
                 for (const key of Object.keys(params.filters)) {
@@ -105,23 +110,20 @@ export class Genese<T> {
                     }
                 }
             }
-        } else {
-            params = {};
         }
         const options = {params: httpParams};
         const url = this.apiRoot(path);
         return this.http.get(url, options).pipe(
             map((response: any) => {
-                if (response) {
-                    if (this._responseWithPagination(response)) {
-                        return {
-                            results: this.geneseMapperService.mapGetAllResults<U>(response.results),
-                            totalResults: response.totalResults};
-                    } else {
-                        return this.geneseMapperService.mapGetAllResults<U>(response);
-                    }
+                if (response && this.isPaginatedResponse(response)) {
+                    return {
+                        results: this.geneseMapperService.mapGetAllResults<T>(response[this.geneseEnvironment.results]),
+                        totalResults: response[this.geneseEnvironment.totalResults]
+                    };
                 } else {
-                    return [];
+                    console.error('Response is not paginated. ' +
+                        'Please verify that the response includes an array corresponding to your Genese pagination environment.');
+                    return undefined;
                 }
             })
         );
@@ -193,20 +195,20 @@ export class Genese<T> {
 
 
 
-    private _responseWithPagination(data: any): boolean {
-        return data && Array.isArray(data.results);
+    private isPaginatedResponse(data: any): boolean {
+        return data && Array.isArray(data[this.geneseEnvironment.results]);
     }
 
 
     /**
      * Translate data for a given language
      */
-    translate<U = T>(data: U, language: string): U {
+    translate(data: any, language: string): any {
         if (!language) {
             console.error('No data or no language : impossible to get element');
             return undefined;
         } else {
-            return this.geneseMapperService.translate<U>(data, language);
+            return this.geneseMapperService.translate(data, language);
         }
     }
 
