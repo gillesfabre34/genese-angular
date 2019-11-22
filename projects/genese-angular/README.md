@@ -520,7 +520,7 @@ export class BooksComponent {
 
 ### getAll<T>(path: string, params?: GetAllParams): Observable<T[]>
 
-This method is used to receive a list of objects with T type, with or without pagination.
+This method is used to receive a list of objects with T type, without pagination.
 Suppose that in your environment.ts, genese.api = http://localhost:3000` and` suppose that you have a model looks like this :
 
 ```ts

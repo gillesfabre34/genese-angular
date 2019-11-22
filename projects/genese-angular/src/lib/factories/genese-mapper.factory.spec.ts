@@ -203,16 +203,16 @@ describe('GENESE MAPPER FACTORY', () => {
             expect(gmp._mapIndexableType(undefined, {a: 1}) === undefined).toBeTruthy();
         });
 
-        it('{gnIndexableKey: {a: 1}}, undefined => {a: 1}', () => {
-            expect(Tools.isSameObject(gmp._mapIndexableType({gnIndexableKey: {a: 1}}, undefined), {a: 1})).toBeTruthy();
+        it('{gnIndexableType: {a: 1}}, undefined => {a: 1}', () => {
+            expect(Tools.isSameObject(gmp._mapIndexableType({gnIndexableType: {a: 1}}, undefined), {a: 1})).toBeTruthy();
         });
 
-        it('{gnIndexableKey: {a: 1}}, null => null', () => {
-            expect(gmp._mapIndexableType({gnIndexableKey: {a: 1}}, null) === null).toBeTruthy();
+        it('{gnIndexableType: {a: 1}}, null => null', () => {
+            expect(gmp._mapIndexableType({gnIndexableType: {a: 1}}, null) === null).toBeTruthy();
         });
 
-        it('{gnIndexableKey: {country: ""}}, countriesSource => {fr: {country: "Allemagne"}}', () => {
-            expect(Tools.isSameObject(gmp._mapIndexableType({gnIndexableKey: {country: ''}}, countriesSource), countriesSource))
+        it('{gnIndexableType: {country: ""}}, countriesSource => {fr: {country: "Allemagne"}}', () => {
+            expect(Tools.isSameObject(gmp._mapIndexableType({gnIndexableType: {country: ''}}, countriesSource), countriesSource))
                 .toBeTruthy();
         });
 
