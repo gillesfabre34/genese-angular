@@ -76,6 +76,7 @@ export class Genese<T> {
             );
     }
 
+
     /**
      * Returns mapped object using fetch method
      */
@@ -141,6 +142,7 @@ export class Genese<T> {
             })
         );
     }
+
 
 
     /**
@@ -236,6 +238,7 @@ export class Genese<T> {
             );
     }
 
+
     /**
      * Get one element of the T class (or the U class if the uConstructor param is defined)
      */
@@ -272,6 +275,7 @@ export class Genese<T> {
                 })
             );
     }
+
 
     /**
      * Update an element with T type
@@ -311,6 +315,9 @@ export class Genese<T> {
     }
 
 
+    /**
+     * Check if the id is correct
+     */
     checkId(id: string): void {
         if (!id || !(+id > 0)) {
             throw Error('Incorrect Genese id.');
@@ -318,11 +325,15 @@ export class Genese<T> {
     }
 
 
+    /**
+     * Check if the path is correct
+     */
     checkPath(path: string): void {
         if (!path || typeof path !== 'string') {
             throw Error('Incorrect Genese path.');
         }
     }
+
 
     /**
      * Check if the response is paginated
@@ -332,6 +343,9 @@ export class Genese<T> {
     }
 
 
+    /**
+     * Get standard path when Genese model contains genese.path
+     */
     private getStandardPath(): string {
         const model = new this.geneseMapperService.tConstructor();
         if (!model['genese'] || !model['genese'].path) {
@@ -340,6 +354,7 @@ export class Genese<T> {
             return model['genese'].path;
         }
     }
+
 
     /**
      * Translate data for a given language
