@@ -96,7 +96,9 @@ export class Genese<T> {
     deleteCustom(path: string, options?: RequestOptions): Observable<ResponseStatus> {
         this.checkPath(path);
         const url = this.apiRoot(path);
-        return this.http.delete(url, {observe: 'response'})
+        options = Tools.default(options, {});
+        Object.assign(options, {observe: 'response'});
+        return this.http.delete(url, options as unknown)
             .pipe(
                 map((response: HttpResponse<any>) => {
                     return response && response.ok === true ? ResponseStatus.SUCCESS : ResponseStatus.FAILED;
@@ -150,11 +152,11 @@ export class Genese<T> {
      * Get all elements of array of data returned by GET request and map them with T type
      */
     getAllCustom(path: string, params?: GetAllParams): Observable<T[]> {
-        let httpParams = new HttpParams();
         if (!path) {
             console.error('No path : impossible to get elements');
             return of(undefined);
         }
+        let httpParams = new HttpParams();
         if (params && params.filters) {
             for (const key of Object.keys(params.filters)) {
                 if (params.filters[key]) {
@@ -308,17 +310,31 @@ export class Genese<T> {
     /**
      * Update an element with T type
      */
-    update(path: string, id?: string, body?: object, options?: RequestOptions): Observable<T | any> {
-        if (!id && !path) {
-            console.error('Error updating element: undefined id or incorrect path');
-            return of(undefined);
-        }
+    update(id: string, updatedObject: T, options?: RequestOptions): Observable<T | any> {
+        this.checkId(id);
+        this.checkTType(updatedObject);
+        options = Object.assign(this.getRequestOptions(options), {observe: 'body'});
+        return this.http.put(this.apiRoot(this.getStandardPath()), updatedObject, options as unknown)
+            .pipe(
+                map(result => {
+                    if (options && options.mapData === false) {
+                        return result;
+                    } else {
+                        return this.geneseMapperService.mapToObject(result);
+                    }
+                })
+            );
+    }
+
+
+    /**
+     * Update an element with T type
+     */
+    updateCustom(path: string, body?: object, options?: RequestOptions): Observable<T | any> {
+        this.checkPath(path);
         body = Tools.default(body, {});
-        options = Tools.default(options, {});
-        options.headers = Tools.default(options.headers, {'Content-Type': 'application/json'});
-        const requestOptions: any = Object.assign(options, {observe: 'body'});
-        const url = this.apiRoot(path, id);
-        return this.http.put( url, body, requestOptions)
+        options = Object.assign(this.getRequestOptions(options), {observe: 'body'});
+        return this.http.put(this.apiRoot(path), body, options as unknown)
             .pipe(
                 map(result => {
                     if (options && options.mapData === false) {
