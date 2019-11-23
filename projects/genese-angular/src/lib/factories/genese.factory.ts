@@ -37,16 +37,13 @@ export class Genese<T> {
     // --------------------------------------------------
 
 
+
     /**
      * Create an object and return an Observable of the created object with T type
      */
     create(newObject: T, options?: RequestOptions): Observable<T | any> {
         this.checkTType(newObject);
-        newObject = Tools.default(newObject, {});
-        options = Tools.default(options, {});
-        options.headers = Tools.default(options.headers, {'Content-Type': 'application/json'});
-        const requestOptions: any = Object.assign(options, {observe: 'newObject'});
-        return this.http.post(this.getStandardPath(), newObject, requestOptions)
+        return this.http.post(this.apiRoot(this.getStandardPath()), newObject, this.getRequestOptions(options))
             .pipe(
                 map((result) => {
                     if (options && options.mapData === false) {
@@ -64,11 +61,7 @@ export class Genese<T> {
     createCustom(path: string, body?: object, options?: RequestOptions): Observable<T | any> {
         this.checkPath(path);
         body = Tools.default(body, {});
-        options = Tools.default(options, {});
-        options.headers = Tools.default(options.headers, {'Content-Type': 'application/json'});
-        const requestOptions: any = Object.assign(options, {observe: 'body'});
-        const url = this.apiRoot(path);
-        return this.http.post(url, body, requestOptions)
+        return this.http.post(this.apiRoot(path), body, this.getRequestOptions(options))
             .pipe(
                 map((result) => {
                     if (options && options.mapData === false) {
@@ -79,7 +72,6 @@ export class Genese<T> {
                 })
             );
     }
-
 
     /**
      * Delete an element and returns success or failed status
@@ -377,6 +369,16 @@ export class Genese<T> {
                 throw Error('Genese : the object is not a T object');
             }
         });
+    }
+
+
+    /**
+     * Get request options of the http request
+     */
+    private getRequestOptions(options: RequestOptions): any {
+        options = Tools.default(options, {});
+        options.headers = Tools.default(options.headers, {'Content-Type': 'application/json'});
+        return  Object.assign(options, {observe: 'body'});
     }
 
 
