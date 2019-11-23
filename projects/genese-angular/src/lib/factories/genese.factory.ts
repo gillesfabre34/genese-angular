@@ -1,7 +1,7 @@
 import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
-import { GetAllWithPaginationParams, GetAllResponse, GetAllParams } from '../models/get-all.params.model';
+import { GetAllWithPaginationParams, GetAllResponse, GetAllParams } from '../models/get-all-params.model';
 import { TConstructor } from '../models/t-constructor.model';
 import { GeneseMapperFactory } from './genese-mapper.factory';
 import { Tools } from '../services/tools.service';
@@ -9,6 +9,7 @@ import { GeneseEnvironmentService } from '../services/genese-environment.service
 import { ResponseStatus } from '../enums/response-status';
 import { RequestMethod } from '../enums/request-method';
 import { RequestOptions } from '../models/request-options.model';
+import { GetOneParams } from '../models/get-one-params.model';
 
 export class Genese<T> {
 
@@ -127,7 +128,6 @@ export class Genese<T> {
      * }
      */
     getAllWithPagination(path: string, params: GetAllWithPaginationParams): Observable<GetAllResponse<T>> {
-        let httpParams = new HttpParams();
         if (!path) {
             console.error('No path : impossible to get paginated elements');
             return of(undefined);
@@ -136,6 +136,7 @@ export class Genese<T> {
             console.error('Incorrect parameters : impossible to get paginated elements. The parameter pageSize must be defined.');
             return of(undefined);
         }
+        let httpParams = new HttpParams();
         if (params) {
             if (params.pageIndex !== undefined) {
                 httpParams = httpParams.set(this.geneseEnvironment.pageIndex, params.pageIndex.toString());
@@ -169,16 +170,52 @@ export class Genese<T> {
         );
     }
 
+
     /**
      * Get one element of the T class (or the U class if the uConstructor param is defined)
      */
-    getOne(path: string, id?: string): Observable<T> {
+    getOne(id?: string): Observable<T> {
+        const model = new this.geneseMapperService.tConstructor();
+        if (!id || !(+id > 0)) {
+            console.error('Incorrect Genese id : impossible to get element');
+            return of(undefined);
+        }
+        if (!model['genese'] || !model['genese'].path) {
+            console.error('No Genese path environment for the model  : impossible to get element');
+            return of(undefined);
+        }
+        const url = this.apiRoot(model['genese'].path, id);
+        return this.http.get(url, {})
+            .pipe(
+                map((data: any) => {
+                    console.log('%c getOne', 'font-weight: bold; color: red;', data);
+                    return this.geneseMapperService.mapToObject<T>(data);
+                })
+            );
+    }
+
+
+    /**
+     * Get one element of the T class (or the U class if the uConstructor param is defined)
+     */
+    getOneCustom(path: string, params?: GetOneParams): Observable<T> {
         if (!path) {
             console.error('No path : impossible to get element');
             return of(undefined);
         }
-        const url = this.apiRoot(path, id);
-        return this.http.get(url, {})
+        let httpParams = new HttpParams();
+        if (params) {
+            if (params.filters) {
+                for (const key of Object.keys(params.filters)) {
+                    if (params.filters[key]) {
+                        httpParams = httpParams.set(key, params.filters[key].toString());
+                    }
+                }
+            }
+        }
+        const options = {params: httpParams};
+        const url = this.apiRoot(path);
+        return this.http.get(url, options)
             .pipe(
                 map((data: any) => {
                     return this.geneseMapperService.mapToObject<T>(data);
@@ -210,7 +247,7 @@ export class Genese<T> {
                         if (options && options.mapData === false) {
                             return result;
                         } else {
-                            return this.geneseMapperService.mapToObject<T>(result ? result.body : undefined);;
+                            return this.geneseMapperService.mapToObject<T>(result ? result.body : undefined);
                         }
                     } else {
                         if (options && options.mapData === false) {

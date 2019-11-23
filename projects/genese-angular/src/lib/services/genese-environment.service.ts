@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { GeneseConfig } from '../models/genese-config';
+import { GeneseConfig } from '../models/genese-config.model';
 import { Tools } from './tools.service';
 
 @Injectable()

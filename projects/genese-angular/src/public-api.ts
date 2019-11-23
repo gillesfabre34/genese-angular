@@ -24,8 +24,10 @@ export * from './lib/factories/genese.factory';
 export * from './lib/factories/genese-mapper.factory';
 
 // Models
-export * from './lib/models/genese-config';
-export * from './lib/models/get-all.params.model';
+export * from './lib/models/genese-config.model';
+export * from './lib/models/genese-model-environment.model';
+export * from './lib/models/get-all-params.model';
+export * from './lib/models/get-one-params.model';
 export * from './lib/models/primitive.model';
 export * from './lib/models/request-options.model';
 export * from './lib/models/t-constructor.model';
