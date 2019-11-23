@@ -204,15 +204,15 @@ describe('GENESE MAPPER FACTORY', () => {
         });
 
         it('{gnIndexableType: {a: 1}}, undefined => {a: 1}', () => {
-            expect(Tools.isSameObject(gmp._mapIndexableType({gnIndexableType: {a: 1}}, undefined), {a: 1})).toBeTruthy();
+            expect(Tools.isSameObject(gmp._mapIndexableType({a: 1}, undefined), {a: 1})).toBeTruthy();
         });
 
-        it('{gnIndexableType: {a: 1}}, null => null', () => {
-            expect(gmp._mapIndexableType({gnIndexableType: {a: 1}}, null) === null).toBeTruthy();
+        it('{a: 1}, null => null', () => {
+            expect(gmp._mapIndexableType({a: 1}, null) === null).toBeTruthy();
         });
 
-        it('{gnIndexableType: {country: ""}}, countriesSource => {fr: {country: "Allemagne"}}', () => {
-            expect(Tools.isSameObject(gmp._mapIndexableType({gnIndexableType: {country: ''}}, countriesSource), countriesSource))
+        it('{country: ""}, countriesSource => {fr: {country: "Allemagne"}}', () => {
+            expect(Tools.isSameObject(gmp._mapIndexableType({country: ''}, countriesSource), countriesSource))
                 .toBeTruthy();
         });
 

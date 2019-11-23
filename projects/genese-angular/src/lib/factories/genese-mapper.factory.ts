@@ -135,22 +135,16 @@ export class GeneseMapperFactory<T> {
             return null;
         } else {
             let cloneTarget = Object.assign({}, target);
-            console.log('%c _mapNotPrimitive target', 'font-weight: bold; color: green;', target);
             for (const key of Object.keys(target)) {
                 if (key === 'gnIndexableType') {
-                    console.log('%c _mapNotPrimitive source', 'font-weight: bold; color: blue;', source);
                     cloneTarget = this._mapIndexableType(target[key] as unknown as IndexableType, source);
-                    console.log('%c _mapNotPrimitive cloneTarget', 'font-weight: bold; color: blue;', cloneTarget);
                 }
                 if (target[key] !== undefined) {
-                    console.log('%c _mapNotPrimitive target[key]', 'font-weight: bold; color: orange;', target[key]);
                     if (source[key] === null) {
                         cloneTarget[key] = null;
                     } else if (source[key] === undefined) {
                         cloneTarget[key] = target[key];
                     } else {
-                        console.log('%c _mapNotPrimitive key', 'font-weight: bold; color: orange;', key);
-                        console.log('%c _mapNotPrimitive target[key]', 'font-weight: bold; color: orange;', target[key]);
                         if (Array.isArray(target[key])) {
                             cloneTarget[key] = Array.isArray(source[key])
                                 ? this._mapArrayOfObjects(target[key], source[key])
@@ -193,9 +187,7 @@ export class GeneseMapperFactory<T> {
      * }
      * Caution: param target should be defined
      */
-    _mapIndexableType(target: IndexableType, source: any): any {
-        console.log('%c _mapIndexableType target', 'font-weight: bold; color: fuchsia;', target);
-        console.log('%c _mapIndexableType source', 'font-weight: bold; color: fuchsia;', source);
+    _mapIndexableType(target: any, source: any): any {
         if (!target) {
             console.warn('Impossible to map indexable types with undefined target.');
             return undefined;
@@ -213,8 +205,6 @@ export class GeneseMapperFactory<T> {
 
 
 
-
-
     private _mapIndexableTypeObject(target: any, source: any): any {
         const mappedObject = {};
         for (const key of Object.keys(source)) {
@@ -225,42 +215,14 @@ export class GeneseMapperFactory<T> {
 
 
     private _mapIndexableTypeArray(target: any[], source: any): any {
-        console.log('%c _mapIndexableTypeArray target', 'font-weight: bold; color: brown;', target);
-        console.log('%c _mapIndexableTypeArray source', 'font-weight: bold; color: brown;', source);
         const mappedObject: any = {};
         for (const key of Object.keys(source)) {
             const deepMapped = this._diveMap({[key]: [target]}, source);
-            console.log('%c _mapIndexableTypeArray deepMapped', 'font-weight: bold; color: brown;', deepMapped);
             Object.assign(mappedObject, {[key]: deepMapped[key]});
-            console.log('%c _mapIndexableTypeArray mappedObject', 'font-weight: bold; color: brown;', mappedObject);
         }
         delete mappedObject.gnIndexableType;
         return mappedObject;
     }
-
-    //
-    // const mappedObject = {};
-    //     // const yyy = this._diveMap(target.gnIndexableType, source);
-    //     // console.log('%c _mapIndexableType yyy', 'font-weight: bold; color: fuchsia;', yyy);
-    //     for (const key of Object.keys(source)) {
-    //         if (Array.isArray(source[key]) && Array.isArray(target.gnIndexableType) && target.gnIndexableType.length > 0) {
-    //             for (const element of source[key]) {
-    //                 // for (const key of Object.keys(source)) {
-    //                 console.log('%c _mapIndexableType element', 'font-weight: bold; color: brown;', element);
-    //                 console.log('%c _mapIndexableType key', 'font-weight: bold; color: brown;', key);
-    //                 console.log('%c _mapIndexableType target.gnIndexableType[key]', 'font-weight: bold; color: brown;', target.gnIndexableType[key]);
-    //                 Object.assign(mappedObject, {[key]: this._diveMap(target.gnIndexableType[0], element)});
-    //                 console.log('%c _mapIndexableType Tools.clonemappedObject', 'font-weight: bold; color: brown;', Tools.clone(mappedObject));
-    //             }
-    //         } else {
-    //             console.log('%c _mapIndexableType key', 'font-weight: bold; color: fuchsia;', key);
-    //             Object.assign(mappedObject, {[key]: this._diveMap(target.gnIndexableType, source[key])});
-    //             console.log('%c _mapIndexableType Tools.clonemappedObject', 'font-weight: bold; color: fuchsia;', Tools.clone(mappedObject));
-    //         }
-    //     }
-    //     console.log('%c _mapIndexableType Tools.clonemappedObject', 'font-weight: bold; color: red;', Tools.clone(mappedObject));
-    //     return mappedObject;
-    // }
 
 
     /**

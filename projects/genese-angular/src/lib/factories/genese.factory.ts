@@ -97,7 +97,6 @@ export class Genese<T> {
      * Get all elements of array of data returned by GET request and map them with T type
      */
     getAll(path: string, params?: GetAllParams): Observable<T[]> {
-        console.log('%c getAll path ', 'font-weight: bold; color: blue;', path);
         let httpParams = new HttpParams();
         if (!path) {
             console.error('No path : impossible to get elements');
@@ -112,7 +111,6 @@ export class Genese<T> {
         }
         const options = {params: httpParams};
         const url = this.apiRoot(path);
-        console.log('%c getAll path ', 'font-weight: bold; color: blue;', path);
         return this.http.get(url, options).pipe(
             map((response: any) => {
                 return response ? this.geneseMapperService.mapGetAllResults<T>(response) : [];
@@ -258,16 +256,14 @@ export class Genese<T> {
      * Get the root path of the api
      */
     apiRoot(path?: string, id?: string): string {
-        console.log('%c apiRoot this.geneseEnvironment.api ', 'font-weight: bold; color: teal;', this.geneseEnvironment.api);
-        console.log('%c apiRoot path ', 'font-weight: bold; color: teal;', path);
-        console.log('%c apiRoot id ', 'font-weight: bold; color: teal;', id);
         const url = path ? this.geneseEnvironment.api + path : this.geneseEnvironment.api;
-        console.log('%c apiRoot url ', 'font-weight: bold; color: teal;', url);
         return id ? `${url}/${id}` : url;
     }
 
 
-
+    /**
+     * Check if the response is paginated
+     */
     private isPaginatedResponse(data: any): boolean {
         return data && Array.isArray(data[this.geneseEnvironment.results]);
     }
