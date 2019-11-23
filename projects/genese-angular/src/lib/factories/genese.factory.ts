@@ -1,7 +1,7 @@
-import { Observable, of, throwError } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
-import { GetAllWithPaginationParams, GetAllResponse, GetAllParams } from '../models/get-all-params.model';
+import { GetAllParams, GetAllResponse, GetAllWithPaginationParams } from '../models/get-all-params.model';
 import { TConstructor } from '../models/t-constructor.model';
 import { GeneseMapperFactory } from './genese-mapper.factory';
 import { Tools } from '../services/tools.service';
@@ -42,11 +42,7 @@ export class Genese<T> {
      */
     create(newObject: T, options?: RequestOptions): Observable<T | any> {
         this.checkTType(newObject);
-        newObject = Tools.default(newObject, {});
-        options = Tools.default(options, {});
-        options.headers = Tools.default(options.headers, {'Content-Type': 'application/json'});
-        const requestOptions: any = Object.assign(options, {observe: 'newObject'});
-        return this.http.post(this.getStandardPath(), newObject, requestOptions)
+        return this.http.post(this.apiRoot(this.getStandardPath()), newObject, this.getRequestOptions(options))
             .pipe(
                 map((result) => {
                     if (options && options.mapData === false) {
@@ -64,11 +60,7 @@ export class Genese<T> {
     createCustom(path: string, body?: object, options?: RequestOptions): Observable<T | any> {
         this.checkPath(path);
         body = Tools.default(body, {});
-        options = Tools.default(options, {});
-        options.headers = Tools.default(options.headers, {'Content-Type': 'application/json'});
-        const requestOptions: any = Object.assign(options, {observe: 'body'});
-        const url = this.apiRoot(path);
-        return this.http.post(url, body, requestOptions)
+        return this.http.post(this.apiRoot(path), body, this.getRequestOptions(options))
             .pipe(
                 map((result) => {
                     if (options && options.mapData === false) {
@@ -385,6 +377,16 @@ export class Genese<T> {
      */
     private isPaginatedResponse(data: any): boolean {
         return data && Array.isArray(data[this.geneseEnvironment.results]);
+    }
+
+
+    /**
+     * Get request options of the http request
+     */
+    private getRequestOptions(options: RequestOptions): any {
+        options = Tools.default(options, {});
+        options.headers = Tools.default(options.headers, {'Content-Type': 'application/json'});
+        return  Object.assign(options, {observe: 'body'});
     }
 
 
