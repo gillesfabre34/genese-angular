@@ -73,14 +73,28 @@ export class Genese<T> {
             );
     }
 
+
     /**
-     * Delete an element and returns success or failed status
+     * Delete an element and returns success or failed status.
+     * This method needs to respect Genese standard model
      */
-    delete(path: string, id?: string, options?: RequestOptions): Observable<ResponseStatus> {
-        if (!path) {
-            console.error('Undefined path : impossible to delete element');
-            return of(undefined);
-        }
+    delete(id: string): Observable<ResponseStatus> {
+        this.checkId(id);
+        return this.http.delete(`${this.apiRoot(this.getStandardPath())}/${id}`, {observe: 'response'})
+            .pipe(
+                map((response: HttpResponse<any>) => {
+                    return response && response.ok === true ? ResponseStatus.SUCCESS : ResponseStatus.FAILED;
+                })
+            );
+    }
+
+
+    /**
+     * Delete an element and returns success or failed status.
+     * This method can be used with custom params.
+     */
+    deleteCustom(path: string, id?: string, options?: RequestOptions): Observable<ResponseStatus> {
+        this.checkPath(path);
         const url = this.apiRoot(path, id);
         return this.http.delete(url, {observe: 'response'})
             .pipe(
