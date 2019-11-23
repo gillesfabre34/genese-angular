@@ -40,7 +40,29 @@ export class Genese<T> {
     /**
      * Create an object and return an Observable of the created object with T type
      */
-    create(path: string, body?: object, options?: RequestOptions): Observable<T | any> {
+    create(newObject: T, options?: RequestOptions): Observable<T | any> {
+        this.checkTType(newObject);
+        newObject = Tools.default(newObject, {});
+        options = Tools.default(options, {});
+        options.headers = Tools.default(options.headers, {'Content-Type': 'application/json'});
+        const requestOptions: any = Object.assign(options, {observe: 'newObject'});
+        return this.http.post(this.getStandardPath(), newObject, requestOptions)
+            .pipe(
+                map((result) => {
+                    if (options && options.mapData === false) {
+                        return result;
+                    } else {
+                        return this.geneseMapperService.mapToObject(result);
+                    }
+                })
+            );
+    }
+
+    /**
+     * Create an object and return an Observable of the created object with T type
+     */
+    createCustom(path: string, body?: object, options?: RequestOptions): Observable<T | any> {
+        this.checkPath(path);
         body = Tools.default(body, {});
         options = Tools.default(options, {});
         options.headers = Tools.default(options.headers, {'Content-Type': 'application/json'});
@@ -332,6 +354,29 @@ export class Genese<T> {
         if (!path || typeof path !== 'string') {
             throw Error('Incorrect Genese path.');
         }
+    }
+
+
+    /**
+     * Check if the path is correct
+     */
+    // TODO : check nested keys
+    checkTType(newObject: any): void {
+        if (!newObject) {
+            throw Error('Genese : there is no T object.');
+        }
+        if (newObject === {}) {
+            throw Error('Genese : empty object.');
+        }
+        if (Array.isArray(newObject)) {
+            throw Error('Genese : an array is not a T object.');
+        }
+        const tObject = new this.tConstructor();
+        Object.keys(newObject).forEach(key => {
+            if (!tObject.hasOwnProperty(key)) {
+                throw Error('Genese : the object is not a T object');
+            }
+        });
     }
 
 
