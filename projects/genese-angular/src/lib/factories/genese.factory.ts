@@ -93,9 +93,9 @@ export class Genese<T> {
      * Delete an element and returns success or failed status.
      * This method can be used with custom params.
      */
-    deleteCustom(path: string, id?: string, options?: RequestOptions): Observable<ResponseStatus> {
+    deleteCustom(path: string, options?: RequestOptions): Observable<ResponseStatus> {
         this.checkPath(path);
-        const url = this.apiRoot(path, id);
+        const url = this.apiRoot(path);
         return this.http.delete(url, {observe: 'response'})
             .pipe(
                 map((response: HttpResponse<any>) => {
