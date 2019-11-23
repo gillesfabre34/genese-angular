@@ -1,4 +1,4 @@
-import { Observable, of } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
 import { GetAllWithPaginationParams, GetAllResponse, GetAllParams } from '../models/get-all-params.model';
@@ -94,10 +94,33 @@ export class Genese<T> {
         }
     }
 
+
     /**
      * Get all elements of array of data returned by GET request and map them with T type
      */
-    getAll(path: string, params?: GetAllParams): Observable<T[]> {
+    getAll(params?: GetAllParams): Observable<T[]> {
+        let httpParams = new HttpParams();
+        if (params && params.filters) {
+            for (const key of Object.keys(params.filters)) {
+                if (params.filters[key]) {
+                    httpParams = httpParams.set(key, params.filters[key].toString());
+                }
+            }
+        }
+        const options = {params: httpParams};
+        const url = this.apiRoot(this.getStandardPath());
+        return this.http.get(url, options).pipe(
+            map((response: any) => {
+                return response ? this.geneseMapperService.mapGetAllResults<T>(response) : [];
+            })
+        );
+    }
+
+
+    /**
+     * Get all elements of array of data returned by GET request and map them with T type
+     */
+    getAllCustom(path: string, params?: GetAllParams): Observable<T[]> {
         let httpParams = new HttpParams();
         if (!path) {
             console.error('No path : impossible to get elements');
@@ -119,8 +142,9 @@ export class Genese<T> {
         );
     }
 
+
     /**
-     * Get all elements
+     * Get all elements with pagination
      * If the http response have paginated format, it returns paginated response with this format :
      * {
      *      totalResults?: number;
@@ -175,20 +199,12 @@ export class Genese<T> {
      * Get one element of the T class (or the U class if the uConstructor param is defined)
      */
     getOne(id?: string): Observable<T> {
-        const model = new this.geneseMapperService.tConstructor();
-        if (!id || !(+id > 0)) {
-            console.error('Incorrect Genese id : impossible to get element');
-            return of(undefined);
-        }
-        if (!model['genese'] || !model['genese'].path) {
-            console.error('No Genese path environment for the model  : impossible to get element');
-            return of(undefined);
-        }
-        const url = this.apiRoot(model['genese'].path, id);
-        return this.http.get(url, {})
+        this.checkId(id);
+        const url = this.apiRoot(this.getStandardPath(), id);
+        return this.http.get(url)
             .pipe(
                 map((data: any) => {
-                    console.log('%c getOne', 'font-weight: bold; color: red;', data);
+                    // console.log('%c getOne', 'font-weight: bold; color: red;', data);
                     return this.geneseMapperService.mapToObject<T>(data);
                 })
             );
@@ -199,10 +215,7 @@ export class Genese<T> {
      * Get one element of the T class (or the U class if the uConstructor param is defined)
      */
     getOneCustom(path: string, params?: GetOneParams): Observable<T> {
-        if (!path) {
-            console.error('No path : impossible to get element');
-            return of(undefined);
-        }
+        this.checkPath(path);
         let httpParams = new HttpParams();
         if (params) {
             if (params.filters) {
@@ -227,9 +240,9 @@ export class Genese<T> {
      * Get one element of the T class (or the U class if the uConstructor param is defined)
      */
     request(path: string, method: RequestMethod, options?: RequestOptions): Observable<T | any> {
-        if (!method || !path) {
-            console.error('Incorrect parameters : impossible to send request');
-            return of(undefined);
+        this.checkPath(path);
+        if (!method) {
+            throw Error('Incorrect Genese method : impossible to send request');
         }
         options = Tools.default(options, {});
         if (!options.headers
@@ -298,6 +311,19 @@ export class Genese<T> {
     }
 
 
+    checkId(id: string): void {
+        if (!id || !(+id > 0)) {
+            throw Error('Incorrect Genese id.');
+        }
+    }
+
+
+    checkPath(path: string): void {
+        if (!path || typeof path !== 'string') {
+            throw Error('Incorrect Genese path.');
+        }
+    }
+
     /**
      * Check if the response is paginated
      */
@@ -305,6 +331,15 @@ export class Genese<T> {
         return data && Array.isArray(data[this.geneseEnvironment.results]);
     }
 
+
+    private getStandardPath(): string {
+        const model = new this.geneseMapperService.tConstructor();
+        if (!model['genese'] || !model['genese'].path) {
+            throw Error('No Genese path environment for the model  : impossible to get element.');
+        } else {
+            return model['genese'].path;
+        }
+    }
 
     /**
      * Translate data for a given language
