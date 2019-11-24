@@ -386,6 +386,21 @@ You'll find usage informations about `translate()` method [here](#translatedata-
 
 Genese provides many useful methods, like "classic" CRUD operations, but other interesting methods which will help you to translate objects or to map them in the type that you want. 
 
+| method           | Usage          |
+| --------------   | -------------- |
+| [create()](#create-t-newobject-t-options-requestoptions-observablet--any-)                                                                | Sends a POST request to add an object in database. Needs to respect Genese standards.                                                                                              |
+| [createCustom()](#createcustom-t-path-string-body-object-options-requestoptions-observablet--any-)                                        | Sends a POST request to add an object in database. Possibility to use custom params, without respecting the Genese standards.                                                      |
+| [delete()](#delete-t-id-string-observable-responsestatus-)                                                                                | Sends a DELETE request to remove an object in database. Needs to respect Genese standards.                                                                                         |
+| [deleteCustom()](#deletecustom-t-path-string-options-requestoptions-observable-responsestatus-)                                           | Sends a DELETE request to remove an object in database. Possibility to use custom params, without respecting the Genese standards.                                                 |
+| [fetch()](#fetch-t-path-string-method-requestmethod-requestinit-requestinit-promise-t-)                                                   | Sends a fetch request. Useful if you can't use the HttpClient for one or another reason.                                                                                           |
+| [getAll()](#getall-t-params-getallparams-observable-t--)                                                                                  | Sends a GET request to get a list of objects from database and to format them with the asked type. Needs to respect Genese standards.                                              |
+| [getAlWithPagination()](#getallwithpagination-t-path-string-params-getallwithpaginationparams-observable-results-t-totalresults-number-)  | Sends a GET request to get a list of objects from database and to format them with the asked type. Needs to respect Genese standards.                                              |
+| [getAllCustom()](#getallcustom-t-path-string-params-getallparams-observable-t--)                                                          | Sends a GET request to get a list of objects from database and to format them with the asked type. Possibility to use custom params, without respecting the Genese standards.      |
+| [request()](#request-t-path-string-method-requestmethod-options-requestoptions-observable-t--any-)                                        | Sends a http.request() method, which is permitting you to call api not respecting REST conventions, like using a POST for getting objects.                                         |
+| [translate()](#translatedata-any-language-string-any)                                                                                     | Special method used to translate automatically objects which are multi-languages in one of these languages. Needs to respect Genese standards.                                     |
+| [update()](#update-t-id-string-updatedobject-t-options-requestoptions-observable-t--any-)                                                 | Sends a PUT request to update an object in database. Needs to respect Genese standards.                                                                                            |
+| [updateCustom()](#updatecustom-t-path-string-body-object-options-requestoptions-observable-t--any-)                                       | Sends a PUT request to update an object in database. Possibility to use custom params, without respecting the Genese standards.                                                    |
+
 ### create< T >(newObject: T, options?: RequestOptions): Observable<T | any> {
 
 create() sends a POST request to add a T object in database and returns an Observable with the object created formatted with the T type.
@@ -1105,11 +1120,36 @@ the result of the previous request will be :
 
 ### update< T >(id: string, updatedObject: T, options?: RequestOptions): Observable< T | any >
 
-This method sends a PUT request updating an object of T type and returns the updated object formatted with the same T type.
+This method sends a PUT request updating a T object in database with a PUT http request and returns the updated object formatted with T type.
+
+update() method needs that your app respects the Genese standards :
+
+* You must add a genese param to your model like this :
+```ts
+{
+  "genese": {
+    "path": "/books"
+  }
+}
+``` 
+* The endpoint must wait a PUT method.
+
+* The api path must respect the REST api standards for a PUT method (example : http://my-path/books/id)
 
 **Usage**
 
 Supposing that in your environment.ts, `genese.api = http://localhost:3000`
+
+``book.model.ts`` 
+```ts
+export class Book {
+    id ?= '';
+    name ?= '';
+    genese?: GeneseModelEnvironment = {
+        path: '/books'
+    }
+}
+```
 
 ``books.component.ts``
 ```ts
@@ -1121,7 +1161,13 @@ export class BooksComponent {
         this.booksGenese = geneseService.getGeneseInstance(Book);
     }
 
-    this.booksGenese.update('/books', '1').subscribe((book: Book) => {
+    const updatedBook: Book = {
+        id: '1',
+        name: 'The caves of steel'
+        author: 'Isaac Asimov'
+    }
+
+    this.booksGenese.update('1', updatedBook).subscribe((book: Book) => {
          // book is the data returned by 
          // the PUT request http://localhost:3000/books/1
          // and formatted with type Book
@@ -1129,29 +1175,64 @@ export class BooksComponent {
 }
 ```
 
-This usage is strictly equivalent to 
- 
-``books.component.ts``
-```ts
-    this.booksGenese.update('/books/1').subscribe((book: Book) => {
-         // book is the data returned by 
-         // the PUT request http://localhost:3000/books/1
-         // and formatted with type Book
-    });
-}
-```
-If you omit the param `id` , you can use a custom path, like `'books/1/library'` if the endpoint needs it. 
-
-``books.component.ts``
-```ts
-    this.booksGenese.update('/books/1/library').subscribe(book: Book) => {
-        // book is the data returned by 
-        // the PUT request http://localhost:3000/books/1/library
-        // and formatted with type Book
-    });
-}
-```
 * Note
 
 The `update()` method supposes that the backend returns data corresponding to the new book object, which will be converted to Book type by Genese. If the backend returns something else and that you just want to get the data without formatting them with T type, you can simply set the property `mapData` to false in the `options` param.
+
+
+
+
+
+
+
+
+
+
+### updateCustom< T >(path: string, body?: object, options?: RequestOptions): Observable< T | any > 
+
+updateCustom() method is used to update a T object in database with a PUT http request and returns a response with ResponseStatus type.
+
+Contrary to update() method, you can use a custom api path and you don't need to parameter your model with a genese property.
+
+However, the backend must wait a PUT http request.
+
+**Usage**
+
+Supposing that in your environment.ts, `genese.api = http://localhost:3000`
+
+``book.model.ts`` 
+```ts
+export class Book {
+    id ?= '';
+    name ?= '';
+}
+```
+
+``books.component.ts``
+```ts
+export class BooksComponent {
+
+    public booksGenese: Genese<Book>;
+
+    constructor(private geneseService: GeneseService) {
+        this.booksGenese = geneseService.getGeneseInstance(Book);
+    }
+
+    const updatedBook: Book = {
+        id: '1',
+        name: 'The caves of steel'
+        author: 'Isaac Asimov'
+    }
+
+    this.booksGenese.update('/custom-books-path/1', updatedBook).subscribe((book: Book) => {
+         // book is the data returned by 
+         // the PUT request http://localhost:3000/custom-books-path/1
+         // and formatted with type Book
+    });
+}
+```
+
+* Note
+
+The `updateCustom()` method supposes that the backend returns data corresponding to the new book object, which will be converted to Book type by Genese. If the backend returns something else and that you just want to get the data without formatting them with T type, you can simply set the property `mapData` to false in the `options` param.
 
