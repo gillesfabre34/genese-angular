@@ -230,7 +230,7 @@ export class Genese<T> {
     /**
      * Get one element of the T class (or the U class if the uConstructor param is defined)
      */
-    getOne(id?: string): Observable<T> {
+    getOne(id: string): Observable<T> {
         this.checkId(id);
         const url = this.apiRoot(this.getStandardPath(), id);
         return this.http.get(url)

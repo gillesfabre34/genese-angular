@@ -9,7 +9,7 @@ Simple example using genese: https://github.com/gillesfabre34/genese-angular-dem
 * [Why use GENESE ?](#why-use-genese-)
 * [Installation](#installation)
 * [Models](#models)
-* [Services](#services)
+* [Methods](#methods)
 
 
 ## Why use GENESE ?
@@ -382,17 +382,45 @@ The ``gnTranslate`` key is a specific keyword used by Genese to understand that 
 You'll need to use it every time you'll have to use translations. The usage of ``gnIndexableType`` is described [here](#indexable-types).
 You'll find usage informations about `translate()` method [here](#translatedata-any-language-string-any)
 
-## Services
+## Methods
 
-Genese provides many useful services, like "classic" CRUD operations, but other interesting methods which will help you to translate objects or to map them in the type that you want. 
+Genese provides many useful methods, like "classic" CRUD operations, but other interesting methods which will help you to translate objects or to map them in the type that you want. 
 
-### create<T>(path: string, body?: object, options?: RequestOptions): Observable< T | any >
+### create< T >(newObject: T, options?: RequestOptions): Observable<T | any> {
 
-This method sends a POST request to create an element of T type and returns an Observable with the object created formatted with the T type.
+create() sends a POST request to add a T object in database and returns an Observable with the object created formatted with the T type.
+
+If the endpoint respects the Genese standards, it should return the new object. In this case, the create() method will return this object formatted with the T type. In the other case, the create() method will simply return the request response.
+
+create() method needs that your app respects the Genese standards :
+
+* You must add a genese param to your model like this :
+```ts
+{
+  "genese": {
+    "path": "/books"
+  }
+}
+```
+* The endpoint must wait a POST method.
+
+* The api path must respect the REST api standards for a POST method (example : http://my-path/book)
 
 **Usage**`
 
 Supposing that in your environment.ts, genese.api = http://localhost:3000`
+
+
+``book.model.ts`` 
+```ts
+export class Book {
+    id ?= '';
+    name ?= '';
+    genese?: GeneseModelEnvironment = {
+        path: '/books'
+    }
+}
+```
 
 ``books.component.ts``
 ```ts
@@ -409,9 +437,9 @@ export class BooksComponent {
         name: 'The caves of steel'
     }
 
-    this.booksGenese.create('/books', book).subscribe((newBook: Book) => {
+    this.booksGenese.create(book).subscribe((newBook: Book) => {
          // newBook is the object returned by 
-         // the POST request http://localhost:3000/books
+         // the POST request http://localhost:3000/book
          // and formatted with type Book
     });
 }
@@ -435,14 +463,24 @@ The `create()` method supposes that the backend returns data corresponding to th
 
 
 
- 
- ### delete(path: string, id?: string, options?: RequestOptions): Observable< ResponseStatus >
- 
- This method deletes an element and returns a `ResponseStatus`, which is equal to `FAILED` or `SUCCESS`.
- 
-**Usage**
+### createCustom< T >(path: string, body?: object, options?: RequestOptions): Observable<T | any> {
 
-Supposing that in your environment.ts, `genese.api = http://localhost:3000`
+Same as [create()](#createnewobject-t-options-requestoptions-observablet--any-), but Contrary to create() method, you can use a custom api path and you don't need to parameter your model with a genese property. Moreover, the parameter "body" can be any object : you don't need to use a body with T type.
+                                                       
+The backend must wait a POST http request.
+
+**Usage**`
+
+Supposing that in your environment.ts, genese.api = http://localhost:3000`
+
+
+``book.model.ts`` 
+```ts
+export class Book {
+    id ?= '';
+    name ?= '';
+}
+```
 
 ``books.component.ts``
 ```ts
@@ -454,33 +492,134 @@ export class BooksComponent {
         this.booksGenese = geneseService.getGeneseInstance(Book);
     }
 
-    this.booksGenese.delete('/books', '1').subscribe((response: ResponseStatus) => {
-         // send the DELETE request http://localhost:3000/books/1
-         // and returns 'FAILED' if the property 'ok' of the DELETE http response is equal to true, and 'SUCCESS' if not.
+    const book: any = {
+        id: '1',
+        name: 'The caves of steel',
+        foo: 'bar'
+    }
+
+    this.booksGenese.createCustom('/books', book).subscribe((newBook: Book) => {
+         // newBook is the object returned by 
+         // the POST request http://localhost:3000/books
+         // and formatted with type Book
     });
 }
 ```
 
-This usage is strictly equivalent to 
+* Note
+
+The `createCustom()` method supposes that the backend returns data corresponding to the new book object, which will be converted to Book type by Genese. If the backend returns something else and that you just want to get the data without formatting them with T type, you can simply set the property `mapData` to false in the `options` param.
+
+``books.component.ts``
+```ts
+    this.booksGenese.create('/custom-books-path', book, {mapData: false}).subscribe((newBook: Book) => {
+         // newBook is the object returned by 
+         // the POST request http://localhost:3000/custom-books-path
+         // and formatted with type Book
+    });
+```
+
+
+
+
+
+
  
-``books.component.ts``
+ ### delete< T >(id: string): Observable< ResponseStatus >
+ 
+ This method is used to remove an object in database with a DELETE http request and returns a `ResponseStatus`, which is equal to `FAILED` or `SUCCESS`.
+ 
+ delete() method needs that your app respects the Genese standards :
+ 
+ * You must add a genese param to your model like this :
+ 
 ```ts
-    this.booksGenese.delete('/books/1').subscribe((response: ResponseStatus) => {
-         // send the DELETE request http://localhost:3000/books/1
-         // and returns 'FAILED' if the property 'ok' of the DELETE http response is equal to true, and 'SUCCESS' if not.
-    });
+{
+  "genese": {
+    "path": "/books"
+  }
 }
 ```
-If you omit the param `id` , you can use a custom path, like `'books/1/library'` if the endpoint needs it. 
+
+ * The endpoint must wait a DELETE method.
+ 
+ * The api path must respect the REST api standards for a create() method, like this : ``http://my-path/book/id``
+ 
+**Usage**
+
+Supposing that in your environment.ts, `genese.api = http://localhost:3000`
+
+``book.model.ts`` 
+```ts
+export class Book {
+    id ?= '';
+    name ?= '';
+    genese?: GeneseModelEnvironment = {
+        path: '/books'
+    }
+}
+```
 
 ``books.component.ts``
 ```ts
-    this.booksGenese.delete('/books/1/library').subscribe((response: ResponseStatus) => {
-         // send the DELETE request http://localhost:3000/books/1/library
+export class BooksComponent {
+
+    public booksGenese: Genese<Book>;
+
+    constructor(private geneseService: GeneseService) {
+        this.booksGenese = geneseService.getGeneseInstance(Book);
+    }
+
+    this.booksGenese.delete('1').subscribe((response: ResponseStatus) => {
+         // send the DELETE request http://localhost:3000/books/1
+         // and returns 'SUCCESS' if the property 'ok' of the DELETE http response is equal to true, and 'FAILED' if not.
+    });
+}
+```
+
+
+
+
+
+
+ 
+ ### deleteCustom< T >(path: string, options?: RequestOptions): Observable< ResponseStatus >
+ 
+ 
+Same as [delete()](#delete-t-id-string-observable-responsestatus-), but contrary to create() method, you can use a custom api path and you don't need to parameter your model with a genese property.
+                                                       
+The backend must wait a DELETE http request.
+ 
+**Usage**
+
+Supposing that in your environment.ts, `genese.api = http://localhost:3000`
+
+
+``book.model.ts`` 
+```ts
+export class Book {
+    id ?= '';
+    name ?= '';
+}
+```
+
+``books.component.ts``
+```ts
+export class BooksComponent {
+
+    public booksGenese: Genese<Book>;
+
+    constructor(private geneseService: GeneseService) {
+        this.booksGenese = geneseService.getGeneseInstance(Book);
+    }
+
+    this.booksGenese.deleteCustom('/custom-books-path', '1').subscribe((response: ResponseStatus) => {
+         // send the DELETE request http://localhost:3000/custom-books-path/1
          // and returns 'FAILED' if the property 'ok' of the DELETE http response is equal to true, and 'SUCCESS' if not.
     });
 }
 ```
+
 
 
 
@@ -506,8 +645,8 @@ export class BooksComponent {
         this.booksGenese = geneseService.getGeneseInstance(Book);
     }
 
-    this.booksGenese.fetch('/books/1', 'get').subscribe((book: Book) => {
-         // sends the fetch GET request http://localhost:3000/books/1
+    this.booksGenese.fetch('/custom-books-path/1', 'get').subscribe((book: Book) => {
+         // sends the fetch GET request http://localhost:3000/custom-books-path/1
          // and returns data object formatted with the type Book.
     });
 }
@@ -518,19 +657,26 @@ export class BooksComponent {
 
 
 
-### getAll<T>(path: string, params?: GetAllParams): Observable<T[]>
+### getAll< T >(params?: GetAllParams): Observable< T[ ] >
 
 This method is used to receive a list of objects with T type, without pagination.
-Suppose that in your environment.ts, genese.api = http://localhost:3000` and` suppose that you have a model looks like this :
+This method is used to get a list of T objects from http GET request and to format them with T type, without pagination.
 
+getAll() method needs that your app respects the Genese standards :
+
+* You must add a genese param to your model like this :
 ```ts
-export class Book {
-    id ?= '';
-    name ?= '';
+{
+  "genese": {
+    "path": "/books"
+  }
 }
 ```
+* The http request must be a GET method
 
-If your http GET request returns a simple list of objects, without pagination, the response will probably be like this:
+* The api path must respect the REST api standards for a getAll() method, like this : ``http://my-path/books``
+
+Supposing that your http GET request returns a simple list of objects, without pagination, the response will probably be like this:
 ```ts
 [
     {
@@ -543,11 +689,22 @@ If your http GET request returns a simple list of objects, without pagination, t
     },
 ]
 ```
-In this case, the ``getAll()`` method simply returns an observable of array of objects, formatted with Book type. In this example, this method will return an array with two objects `[Book, Book].
+In this case, the ``getAll()`` method returns an observable of array of Book, formatted with Book type. In this example, this method will return an array with two objects ``[Book, Book]``.
 
 **Usage**`
 
-Supposing that in your environment.ts, genese.api = http://localhost:3000`
+Supposing that in your environment.ts, ``genese.api = http://localhost:3000``
+
+``book.model.ts`` 
+```ts
+export class Book {
+    id ?= '';
+    name ?= '';
+    genese?: GeneseModelEnvironment = {
+        path: '/books'
+    }
+}
+```
 
 ``books.component.ts``
 ```ts
@@ -559,7 +716,7 @@ export class BooksComponent {
         this.booksGenese = geneseService.getGeneseInstance(Book);
     }
 
-    this.booksGenese.getÀll('/books').subscribe((books: Book[]) => {
+    this.booksGenese.getÀll().subscribe((books: Book[]) => {
          // books is the array of data returned by 
          // the GET request http://localhost:3000/books
          // and formatted with type Book
@@ -571,9 +728,64 @@ export class BooksComponent {
 You can add some filters to your http request very simply, just like this :
 
 ```ts
-    this.booksGenese.getÀll('/books', {author: 'Isaac Asimov'}).subscribe((books: Book[]) => {
+    this.booksGenese.getÀll({author: 'Isaac Asimov'}).subscribe((books: Book[]) => {
          // books is the array of data returned by 
          // the GET request http://localhost:3000/books?author=Isaac%20Asimov
+         // and formatted with type Book
+    });
+}
+```
+
+
+
+
+
+
+### getAllCustom< T >(path: string, params?: GetAllParams): Observable< T[ ] >
+
+As getAll() method, getAllCustom() is used to get a list of objects from http GET request and to format them with T type.
+
+But contrary to getAll() method, you can use a custom api path and you don't need to parameter your model with a genese property.
+
+The backend must wait a GET http request.
+
+**Usage**`
+
+Supposing that in your environment.ts, ``genese.api = http://localhost:3000``
+
+``book.model.ts`` 
+```ts
+export class Book {
+    id ?= '';
+    name ?= '';
+}
+```
+
+``books.component.ts``
+```ts
+export class BooksComponent {
+
+    public booksGenese: Genese<Book>;
+
+    constructor(private geneseService: GeneseService) {
+        this.booksGenese = geneseService.getGeneseInstance(Book);
+    }
+
+    this.booksGenese.getÀllCustom('/books').subscribe((books: Book[]) => {
+         // books is the array of data returned by 
+         // the GET request http://localhost:3000/books
+         // and formatted with type Book
+    });
+}
+```
+* Filters
+
+You can add some filters to your http request very simply, just like this :
+
+```ts
+    this.booksGenese.getÀll('/custom-books-path', {author: 'Isaac Asimov'}).subscribe((books: Book[]) => {
+         // books is the array of data returned by 
+         // the GET request http://localhost:3000/custom-books-path?author=Isaac%20Asimov
          // and formatted with type Book
     });
 }
@@ -664,13 +876,43 @@ export const environment = {
 
 
 
-### getOne<T>(path: string, id?: string): Observable< T >
+### getOne< T >(id: string): Observable< T >
 
-This method returns an observable of element of type T for a given path and a given id (optional). The returned object is mapped with the T type, which is the type of your `GeneseService`.
+This method is used to get a T object in database with a GET http request. The returned object is mapped with the T type, which is given by the type of your `GeneseService`.
+
+This method needs that your app respects the Genese standards :
+
+* You must add a genese param to your model like this :
+```ts
+[
+    {
+        id: '1',
+        name: 'The caves of steel'
+    },
+    {
+        id: '2',
+        name: 'The robots of dawn'
+    },
+]
+```
+* The endpoint must wait a GET method.
+
+* The api path must respect the REST api standards for a GET method (example : ``http://my-path/book/id``)
 
 **Usage**
 
 Supposing that in your environment.ts, `genese.api = http://localhost:3000` .
+
+``book.model.ts`` 
+```ts
+export class Book {
+    id ?= '';
+    name ?= '';
+    genese?: GeneseModelEnvironment = {
+        path: '/books'
+    }
+}
+```
 
 ``books.component.ts``
 ```ts
@@ -682,30 +924,57 @@ export class BooksComponent {
         this.booksGenese = geneseService.getGeneseInstance(Book);
     }
 
-    this.booksGenese.getOne('/books', '1').subscribe((book: Book) => {
+    this.booksGenese.getOne('1').subscribe((book: Book) => {
          // book is the data returned by 
          // the request http://localhost:3000/books/1
          // and formatted with type Book
     });
 }
 ```
-The next lines would do exactly the same :
 
-```
-this.booksGenese.getOne('/books', '1').subscribe((book: Book) => {
-     // book will be the data returned by 
-     // the request http://localhost:3000/books/1
-     // and formatted with type Book
-});
-```
-* Example 2
+
+
+
+
+### getOneCustom(path: string, params?: GetOneParams): Observable<T>
+
+getOneCustom() method is used to get a T object in database with a GET http request. The returned object is mapped with the T type, which is given by the type of your `GeneseService`.
+
+Contrary to getOne() method, you can use a custom api path and you don't need to parameter your model with a genese property. Moreover, you can add some params, like query params.
+
+The backend must wait a GET http request.
+
+**Usage**
+
+Supposing that in your environment.ts, `genese.api = http://localhost:3000` .
+
+``book.model.ts`` 
 ```ts
-this.booksGenese.getOne('/books/1?otherParam=2').subscribe((book: Book) => {
-     // book will be the data returned by 
-     // the request http://localhost:3000/books/1?otherParam=2
-     // and formatted with type Book
-});
+export class Book {
+    id ?= '';
+    name ?= '';
+}
 ```
+
+``books.component.ts``
+```ts
+export class BooksComponent {
+
+    public booksGenese: Genese<Book>;
+
+    constructor(private geneseService: GeneseService) {
+        this.booksGenese = geneseService.getGeneseInstance(Book);
+    }
+
+    this.booksGenese.getOne('/custom-books-path','1').subscribe((book: Book) => {
+         // book is the data returned by 
+         // the request http://localhost:3000/custom-books-path/1
+         // and formatted with type Book
+    });
+}
+```
+
+
 
 
 
@@ -721,6 +990,14 @@ To solve this problem, you can use the Genese method `request()`, which is using
 **Usage**
 
 Supposing that in your environment.ts, `genese.api = http://localhost:3000`
+
+``book.model.ts`` 
+```ts
+export class Book {
+    id ?= '';
+    name ?= '';
+}
+```
 
 ``books.component.ts``
 ```ts
@@ -826,7 +1103,7 @@ the result of the previous request will be :
 
 
 
-### update(path: string, id?: string, body?: object, options?: RequestOptions): Observable< T | any >
+### update< T >(id: string, updatedObject: T, options?: RequestOptions): Observable< T | any >
 
 This method sends a PUT request updating an object of T type and returns the updated object formatted with the same T type.
 
