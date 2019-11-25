@@ -137,6 +137,7 @@ Of course, you can use all the classic CRUD methods with Genese, but you can do 
 
 With Genese, you simply code better and faster.
 
+[Top](#genese-angular--npm-versionhttpsbadgefuryiojsgenese-angularsvghttpsbadgefuryiojsgenese-angular)
 ## Installation
 
 First you need to install the npm module:
@@ -149,6 +150,7 @@ The minimum Angular version is Angular 8.
 
 ---
 
+[Top](#genese-angular--npm-versionhttpsbadgefuryiojsgenese-angularsvghttpsbadgefuryiojsgenese-angular) -> [Installation](#installation)
 #### 1. Config
 
 At first, you need to configure your environment. Genese needs to know what is the api address of your backend. You can do that by adding `GeneseEnvironmentService` in the constructor of your `AppComponent.
@@ -185,6 +187,7 @@ export const environment = {
 ```
 (replace the value of the property `api` by your api url)
 
+[Top](#genese-angular--npm-versionhttpsbadgefuryiojsgenese-angularsvghttpsbadgefuryiojsgenese-angular) -> [Installation](#installation)
 #### 2. Import Genese module
 
 Import the genese module in the `app.module.
@@ -214,6 +217,7 @@ export class AppModule { }
 ```
 
 
+[Top](#genese-angular--npm-versionhttpsbadgefuryiojsgenese-angularsvghttpsbadgefuryiojsgenese-angular) -> [Installation](#installation)
 ##### 3. Inject geneseService in your component
 
 Add a property with `Genese` type to your component, inject `GeneseService` in the constructor and instantiate your property with `getGeneseInstance`.
@@ -242,6 +246,7 @@ export class HomeComponent {
 }
 ```
 
+[Top](#genese-angular--npm-versionhttpsbadgefuryiojsgenese-angularsvghttpsbadgefuryiojsgenese-angular) 
 ## Models
 
 Genese needs to be able to find all the properties of your models. That's why it is imperative to set default values to all the properties of your models, including inside nested objects.
@@ -251,6 +256,7 @@ Respecting this constraint, Genese will be able to return all the objects correc
 
 A Genese good practice is to set all the properties of your models as optional. It will be easier to create new objects and will not crash if one day you forget to set a property.
 
+[Top](#genese-angular--npm-versionhttpsbadgefuryiojsgenese-angularsvghttpsbadgefuryiojsgenese-angular) -> [Models](#models)
 ### Primitives
 * Example with primitives
 
@@ -264,6 +270,7 @@ export class Book = {
 }
 ```
 
+[Top](#genese-angular--npm-versionhttpsbadgefuryiojsgenese-angularsvghttpsbadgefuryiojsgenese-angular) -> [Models](#models)
 ### Nested objects
 * Example with nested object
 
@@ -286,6 +293,7 @@ export class Book = {
 }
 ```
 
+[Top](#genese-angular--npm-versionhttpsbadgefuryiojsgenese-angularsvghttpsbadgefuryiojsgenese-angular) -> [Models](#models)
 ### Indexable types
 
 Suppose that you wait http responses like this 
@@ -337,6 +345,7 @@ export class Book = {
 The ``gnIndexableType`` key is a special key used by Genese to understand that you wait a response with indexableTypes.
 You'll need to use it every time you'll have to use indexable types.
 
+[Top](#genese-angular--npm-versionhttpsbadgefuryiojsgenese-angularsvghttpsbadgefuryiojsgenese-angular) -> [Models](#models)
 ### Translations
 
 Supposing that you have some fields which are translated in many languages, you'll probably want to have a GET request which will return the object translated in one of these languages. For example, if your data are like this 
@@ -382,26 +391,30 @@ The ``gnTranslate`` key is a specific keyword used by Genese to understand that 
 You'll need to use it every time you'll have to use translations. The usage of ``gnIndexableType`` is described [here](#indexable-types).
 You'll find usage informations about `translate()` method [here](#translatedata-any-language-string-any)
 
+[Top](#genese-angular--npm-versionhttpsbadgefuryiojsgenese-angularsvghttpsbadgefuryiojsgenese-angular) 
 ## Methods
 
 Genese provides many useful methods, like "classic" CRUD operations, but other interesting methods which will help you to translate objects or to map them in the type that you want. 
 
 | method           | Usage          |
 | --------------   | -------------- |
-| [create()](#create-t-newobject-t-options-requestoptions-observablet--any-)                                                                | Sends a POST request to add an object in database. Needs to respect Genese standards.                                                                                              |
-| [createCustom()](#createcustom-t-path-string-body-object-options-requestoptions-observablet--any-)                                        | Sends a POST request to add an object in database. Possibility to use custom params, without respecting the Genese standards.                                                      |
-| [delete()](#delete-t-id-string-observable-responsestatus-)                                                                                | Sends a DELETE request to remove an object in database. Needs to respect Genese standards.                                                                                         |
-| [deleteCustom()](#deletecustom-t-path-string-options-requestoptions-observable-responsestatus-)                                           | Sends a DELETE request to remove an object in database. Possibility to use custom params, without respecting the Genese standards.                                                 |
-| [fetch()](#fetch-t-path-string-method-requestmethod-requestinit-requestinit-promise-t-)                                                   | Sends a fetch request. Useful if you can't use the HttpClient for one or another reason.                                                                                           |
-| [getAll()](#getall-t-params-getallparams-observable-t--)                                                                                  | Sends a GET request to get a list of objects from database and to format them with the asked type. Needs to respect Genese standards.                                              |
-| [getAlWithPagination()](#getallwithpagination-t-path-string-params-getallwithpaginationparams-observable-results-t-totalresults-number-)  | Sends a GET request to get a list of objects from database and to format them with the asked type. Needs to respect Genese standards.                                              |
-| [getAllCustom()](#getallcustom-t-path-string-params-getallparams-observable-t--)                                                          | Sends a GET request to get a list of objects from database and to format them with the asked type. Possibility to use custom params, without respecting the Genese standards.      |
-| [request()](#request-t-path-string-method-requestmethod-options-requestoptions-observable-t--any-)                                        | Sends a http.request() method, which is permitting you to call api not respecting REST conventions, like using a POST for getting objects.                                         |
-| [translate()](#translatedata-any-language-string-any)                                                                                     | Special method used to translate automatically objects which are multi-languages in one of these languages. Needs to respect Genese standards.                                     |
-| [update()](#update-t-id-string-updatedobject-t-options-requestoptions-observable-t--any-)                                                 | Sends a PUT request to update an object in database. Needs to respect Genese standards.                                                                                            |
-| [updateCustom()](#updatecustom-t-path-string-body-object-options-requestoptions-observable-t--any-)                                       | Sends a PUT request to update an object in database. Possibility to use custom params, without respecting the Genese standards.                                                    |
+| [create()](#create-t-newobject-t-options-requestoptions-observablet--any)                                                                | Sends a POST request to add an object in database. Needs to respect <br>Genese standards.                                                                                              |
+| [createCustom()](#createcustom-t-path-string-body-object-options-requestoptions-observablet--any)                                        | Sends a POST request to add an object in database. Possibility to use <br>custom params, without respecting the Genese standards.                                                      |
+| [delete()](#delete-t-id-string-observable-responsestatus)                                                                                | Sends a DELETE request to remove an object in database. Needs to <br>respect Genese standards.                                                                                         |
+| [deleteCustom()](#deletecustom-t-path-string-options-requestoptions-observable-responsestatus)                                           | Sends a DELETE request to remove an object in database. Possibility to use<br> custom params, without respecting the Genese standards.                                                 |
+| [fetch()](#fetch-t-path-string-method-requestmethod-requestinit-requestinit-promise-t)                                                   | Sends a fetch request. Useful if you can't use the HttpClient for one or<br> another reason.                                                                                           |
+| [getAll()](#getall-t-params-getallparams-observablet)                                                                                    | Sends a GET request to get a list of objects from database and to format<br> them with the asked type. Needs to respect Genese standards.                                              |
+| [getAlWithPagination()](#getallwithpagination-t-path-string-params-getallwithpaginationparams-observableresults-t-totalresults-number)   | Sends a GET request to get a list of objects from database and to format<br> them with the asked type. Needs to respect Genese standards.                                              |
+| [getAllCustom()](#getallcustom-t-path-string-params-getallparams-observablet)                                                            | Sends a GET request to get a list of objects from database and to format<br> them with the asked type. Possibility to use custom params, without respecting the Genese standards.      |
+| [getOne()](#getone-t-id-string-observable-t)                                                                                             | Sends a GET request to get an object from database and to format it with<br> the asked type. Needs to respect Genese standards.      |
+| [getOneCustom()](#getonecustompath-string-params-getoneparams-observablet)                                                               | Sends a GET request to get an object from database and to format it with<br> the asked type. Possibility to use custom params, without respecting the Genese standards.      |
+| [request()](#request-t-path-string-method-requestmethod-options-requestoptions-observablet--any)                                         | Sends a http.request() method, which is permitting you to call api not<br> respecting REST conventions, like using a POST for getting objects.                                         |
+| [translate()](#translatedata-any-language-string-any)                                                                                    | Special method used to translate automatically objects which are multi-<br>languages in one of these languages. Needs to respect Genese standards.                                     |
+| [update()](#update-t-id-string-updatedobject-t-options-requestoptions-observablet--any)                                                  | Sends a PUT request to update an object in database. Needs to respect <br>Genese standards.                                                                                            |
+| [updateCustom()](#updatecustom-t-path-string-body-object-options-requestoptions-observablet--any)                                        | Sends a PUT request to update an object in database. Possibility to use <br>custom params, without respecting the Genese standards.                                                    |
 
-### create< T >(newObject: T, options?: RequestOptions): Observable<T | any> {
+[Top](#genese-angular--npm-versionhttpsbadgefuryiojsgenese-angularsvghttpsbadgefuryiojsgenese-angular) -> [Methods](#methods)
+### create< T >(newObject: T, options?: RequestOptions): Observable<T | any>
 
 create() sends a POST request to add a T object in database and returns an Observable with the object created formatted with the T type.
 
@@ -478,9 +491,10 @@ The `create()` method supposes that the backend returns data corresponding to th
 
 
 
-### createCustom< T >(path: string, body?: object, options?: RequestOptions): Observable<T | any> {
+[Top](#genese-angular--npm-versionhttpsbadgefuryiojsgenese-angularsvghttpsbadgefuryiojsgenese-angular) -> [Methods](#methods)
+### createCustom< T >(path: string, body?: object, options?: RequestOptions): Observable<T | any>
 
-Same as [create()](#createnewobject-t-options-requestoptions-observablet--any-), but Contrary to create() method, you can use a custom api path and you don't need to parameter your model with a genese property. Moreover, the parameter "body" can be any object : you don't need to use a body with T type.
+Same as [create()](#create-t-newobject-t-options-requestoptions-observablet--any), but Contrary to create() method, you can use a custom api path and you don't need to parameter your model with a genese property. Moreover, the parameter "body" can be any object : you don't need to use a body with T type.
                                                        
 The backend must wait a POST http request.
 
@@ -540,7 +554,8 @@ The `createCustom()` method supposes that the backend returns data corresponding
 
 
  
- ### delete< T >(id: string): Observable< ResponseStatus >
+[Top](#genese-angular--npm-versionhttpsbadgefuryiojsgenese-angularsvghttpsbadgefuryiojsgenese-angular) -> [Methods](#methods)
+ ### delete< T >(id: string): Observable< ResponseStatus>
  
  This method is used to remove an object in database with a DELETE http request and returns a `ResponseStatus`, which is equal to `FAILED` or `SUCCESS`.
  
@@ -598,7 +613,8 @@ export class BooksComponent {
 
 
  
- ### deleteCustom< T >(path: string, options?: RequestOptions): Observable< ResponseStatus >
+[Top](#genese-angular--npm-versionhttpsbadgefuryiojsgenese-angularsvghttpsbadgefuryiojsgenese-angular) -> [Methods](#methods)
+ ### deleteCustom< T >(path: string, options?: RequestOptions): Observable< ResponseStatus>
  
  
 Same as [delete()](#delete-t-id-string-observable-responsestatus-), but contrary to create() method, you can use a custom api path and you don't need to parameter your model with a genese property.
@@ -642,7 +658,8 @@ export class BooksComponent {
 
 
 
-### fetch< T >(path: string, method: RequestMethod, requestInit?: RequestInit): Promise< T >
+[Top](#genese-angular--npm-versionhttpsbadgefuryiojsgenese-angularsvghttpsbadgefuryiojsgenese-angular) -> [Methods](#methods)
+### fetch< T >(path: string, method: RequestMethod, requestInit?: RequestInit): Promise< T>
 
 If for one or another reason you can't use the Angular HttpClient but you're able to use `fetch` requests, you should use Genese `fetch()`method, which will send a `fetch` request and return a formatted object with the asked type.
 
@@ -672,7 +689,8 @@ export class BooksComponent {
 
 
 
-### getAll< T >(params?: GetAllParams): Observable< T[ ] >
+[Top](#genese-angular--npm-versionhttpsbadgefuryiojsgenese-angularsvghttpsbadgefuryiojsgenese-angular) -> [Methods](#methods)
+### getAll< T >(params?: GetAllParams): Observable<T[]>
 
 This method is used to receive a list of objects with T type, without pagination.
 This method is used to get a list of T objects from http GET request and to format them with T type, without pagination.
@@ -756,7 +774,8 @@ You can add some filters to your http request very simply, just like this :
 
 
 
-### getAllCustom< T >(path: string, params?: GetAllParams): Observable< T[ ] >
+[Top](#genese-angular--npm-versionhttpsbadgefuryiojsgenese-angularsvghttpsbadgefuryiojsgenese-angular) -> [Methods](#methods)
+### getAllCustom< T >(path: string, params?: GetAllParams): Observable<T[]>
 
 As getAll() method, getAllCustom() is used to get a list of objects from http GET request and to format them with T type.
 
@@ -811,7 +830,8 @@ You can add some filters to your http request very simply, just like this :
 
 
 
-### getAllWithPagination< T >(path: string, params: GetAllWithPaginationParams): Observable< {results: T[], totalResults: number} >
+[Top](#genese-angular--npm-versionhttpsbadgefuryiojsgenese-angularsvghttpsbadgefuryiojsgenese-angular) -> [Methods](#methods)
+### getAllWithPagination< T >(path: string, params: GetAllWithPaginationParams): Observable<{results: T[], totalResults: number}>
 
 Suppose that you want to display a list of books which are in your library, and that you want to paginate it with a page size of 5 elements. Suppose too that you have 231 books in your library, and that you want to display the third page of your list (so pageIndex = 2).
 Usually, you would send a GET request like this :
@@ -891,7 +911,8 @@ export const environment = {
 
 
 
-### getOne< T >(id: string): Observable< T >
+[Top](#genese-angular--npm-versionhttpsbadgefuryiojsgenese-angularsvghttpsbadgefuryiojsgenese-angular) -> [Methods](#methods)
+### getOne< T >(id: string): Observable< T>
 
 This method is used to get a T object in database with a GET http request. The returned object is mapped with the T type, which is given by the type of your `GeneseService`.
 
@@ -951,6 +972,7 @@ export class BooksComponent {
 
 
 
+[Top](#genese-angular--npm-versionhttpsbadgefuryiojsgenese-angularsvghttpsbadgefuryiojsgenese-angular) -> [Methods](#methods)
 ### getOneCustom(path: string, params?: GetOneParams): Observable<T>
 
 getOneCustom() method is used to get a T object in database with a GET http request. The returned object is mapped with the T type, which is given by the type of your `GeneseService`.
@@ -996,7 +1018,8 @@ export class BooksComponent {
 
 
 
-### request< T >(path: string, method: RequestMethod, options?: RequestOptions): Observable< T | any >
+[Top](#genese-angular--npm-versionhttpsbadgefuryiojsgenese-angularsvghttpsbadgefuryiojsgenese-angular) -> [Methods](#methods)
+### request< T >(path: string, method: RequestMethod, options?: RequestOptions): Observable<T | any>
 
 It can happens, for one or another reason, that your endpoints are not respecting REST standards. If you can't modify the backend's code, it can be problematic, especially when the http actions of the endpoints are not the real actions that they should do. As example, it can happens that your GET or DELETE methods are done with POST requests. It is a bad practice, but sometimes you don't have any choice. In this case, usual Genese CRUD methods are difficult to use. As example, the `getOne()` Genese method will send a GET request; if the backend is waiting a POST request, the `getOne()` method will crash. 
 
@@ -1038,6 +1061,7 @@ export class BooksComponent {
 
 
 
+[Top](#genese-angular--npm-versionhttpsbadgefuryiojsgenese-angularsvghttpsbadgefuryiojsgenese-angular) -> [Methods](#methods)
 ### translate(data: any, language: string): any
 
 This methods translates data containing properties with translated in many languages into data containing these properties translated in one of these languages. These data must respect Genese standard formats which are more detailed [here](#translations).
@@ -1117,8 +1141,8 @@ the result of the previous request will be :
 
 
 
-
-### update< T >(id: string, updatedObject: T, options?: RequestOptions): Observable< T | any >
+[Top](#genese-angular--npm-versionhttpsbadgefuryiojsgenese-angularsvghttpsbadgefuryiojsgenese-angular) -> [Methods](#methods)
+### update< T >(id: string, updatedObject: T, options?: RequestOptions): Observable<T | any>
 
 This method sends a PUT request updating a T object in database with a PUT http request and returns the updated object formatted with T type.
 
@@ -1188,7 +1212,8 @@ The `update()` method supposes that the backend returns data corresponding to th
 
 
 
-### updateCustom< T >(path: string, body?: object, options?: RequestOptions): Observable< T | any > 
+[Top](#genese-angular--npm-versionhttpsbadgefuryiojsgenese-angularsvghttpsbadgefuryiojsgenese-angular) -> [Methods](#methods)
+### updateCustom< T >(path: string, body?: object, options?: RequestOptions): Observable<T | any> 
 
 updateCustom() method is used to update a T object in database with a PUT http request and returns a response with ResponseStatus type.
 
