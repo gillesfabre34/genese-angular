@@ -3,13 +3,13 @@ import { map } from 'rxjs/operators';
 import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
 import { GetAllWithPaginationParams, GetAllResponse, GetAllParams } from '../models/get-all-params.model';
 import { TConstructor } from '../models/t-constructor.model';
-import { GeneseMapperFactory } from './genese-mapper.factory';
 import { Tools } from '../services/tools.service';
 import { GeneseEnvironmentService } from '../services/genese-environment.service';
 import { ResponseStatus } from '../enums/response-status';
 import { RequestMethod } from '../enums/request-method';
 import { RequestOptions } from '../models/request-options.model';
 import { GetOneParams } from '../models/get-one-params.model';
+import { GeneseMapperFactory } from 'genese-mapper';
 
 export class Genese<T> {
 
@@ -49,7 +49,7 @@ export class Genese<T> {
                     if (options && options.mapData === false) {
                         return result;
                     } else {
-                        return this.geneseMapperService.mapToObject(result);
+                        return this.geneseMapperService.geneseMapper(result);
                     }
                 })
             );
@@ -67,7 +67,7 @@ export class Genese<T> {
                     if (options && options.mapData === false) {
                         return result;
                     } else {
-                        return this.geneseMapperService.mapToObject(result);
+                        return this.geneseMapperService.geneseMapper(result);
                     }
                 })
             );
@@ -119,9 +119,9 @@ export class Genese<T> {
         const response = await fetch(url, requestInit);
         const data = await response.clone().json();
         if (method === RequestMethod.DELETE) {
-            return this.geneseMapperService.mapToObject<T>(data ? data.body : undefined);
+            return this.geneseMapperService.geneseMapper<T>(data ? data.body : undefined);
         } else {
-            return this.geneseMapperService.mapToObject<T>(data);
+            return this.geneseMapperService.geneseMapper<T>(data);
         }
     }
 
@@ -130,6 +130,7 @@ export class Genese<T> {
      * Get all elements of array of data returned by GET request and map them with T type
      */
     getAll(params?: GetAllParams): Observable<T[]> {
+        console.log('%c getAll params', 'font-weight: bold; color: blue;', params);
         let httpParams = new HttpParams();
         if (params && params.filters) {
             for (const key of Object.keys(params.filters)) {
@@ -237,7 +238,7 @@ export class Genese<T> {
             .pipe(
                 map((data: any) => {
                     // console.log('%c getOne', 'font-weight: bold; color: red;', data);
-                    return this.geneseMapperService.mapToObject<T>(data);
+                    return this.geneseMapperService.geneseMapper<T>(data);
                 })
             );
     }
@@ -263,7 +264,7 @@ export class Genese<T> {
         return this.http.get(url, options)
             .pipe(
                 map((data: any) => {
-                    return this.geneseMapperService.mapToObject<T>(data);
+                    return this.geneseMapperService.geneseMapper<T>(data);
                 })
             );
     }
@@ -293,13 +294,13 @@ export class Genese<T> {
                         if (options && options.mapData === false) {
                             return result;
                         } else {
-                            return this.geneseMapperService.mapToObject<T>(result ? result.body : undefined);
+                            return this.geneseMapperService.geneseMapper<T>(result ? result.body : undefined);
                         }
                     } else {
                         if (options && options.mapData === false) {
                             return result;
                         } else {
-                            return this.geneseMapperService.mapToObject(result);
+                            return this.geneseMapperService.geneseMapper(result);
                         }
                     }
                 })
@@ -320,7 +321,7 @@ export class Genese<T> {
                     if (options && options.mapData === false) {
                         return result;
                     } else {
-                        return this.geneseMapperService.mapToObject(result);
+                        return this.geneseMapperService.geneseMapper(result);
                     }
                 })
             );
@@ -340,7 +341,7 @@ export class Genese<T> {
                     if (options && options.mapData === false) {
                         return result;
                     } else {
-                        return this.geneseMapperService.mapToObject(result);
+                        return this.geneseMapperService.geneseMapper(result);
                     }
                 })
             );

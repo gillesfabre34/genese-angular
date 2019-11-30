@@ -21,7 +21,7 @@ export * from './lib/services/genese-environment.service';
 
 // Factories
 export * from './lib/factories/genese.factory';
-export * from './lib/factories/genese-mapper.factory';
+// export * from './lib/factories/genese-mapper.factory';
 
 // Models
 export * from './lib/models/genese-config.model';
