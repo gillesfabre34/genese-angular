@@ -2,9 +2,7 @@
     "$schema": "../../node_modules/ng-packagr/ng-package.schema.json",
     "dest": "../../dist/genese-angular",
     "lib": {
-        "entryFile": "src/public-api.ts",
-        "umdModuleIds": {
-            "genese-mapper": "geneseMapper"
-        }
-    }
+        "entryFile": "src/public-api.ts"
+    },
+    "whitelistedNonPeerDependencies": ["genese-mapper"]
 }

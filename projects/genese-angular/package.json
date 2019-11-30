@@ -1,14 +1,16 @@
 {
     "name": "genese-angular",
-    "version": "1.0.5",
+    "version": "1.1.2",
     "author": {
         "name": "Gilles Fabre",
         "url": "http://gillesfabre.com/"
     },
+    "dependencies": {
+        "genese-mapper": "~0.0.6"
+    },
     "peerDependencies": {
-        "@angular/common": "^8.2.10",
-        "@angular/core": "^8.2.10",
-        "genese-mapper": "genese-mapper"
+        "@angular/common": ">=8.0.0",
+        "@angular/core": ">=8.0.0"
     },
     "devDependencies": {
         "karma-mocha-reporter": "^2.2.5",
