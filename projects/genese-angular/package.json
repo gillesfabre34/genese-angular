@@ -6,7 +6,7 @@
         "url": "http://gillesfabre.com/"
     },
     "dependencies": {
-        "genese-mapper": "1.0.1"
+        "genese-mapper": "^1.0.1"
     },
     "peerDependencies": {
         "@angular/common": ">=8.0.0",
