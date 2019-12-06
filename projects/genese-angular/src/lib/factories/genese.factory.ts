@@ -130,7 +130,6 @@ export class Genese<T> {
      * Get all elements of array of data returned by GET request and map them with T type
      */
     getAll(params?: GetAllParams): Observable<T[]> {
-        console.log('%c getAll params', 'font-weight: bold; color: blue;', params);
         let httpParams = new HttpParams();
         if (params && params.filters) {
             for (const key of Object.keys(params.filters)) {

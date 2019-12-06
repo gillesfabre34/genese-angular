@@ -20,7 +20,7 @@ genese-angular is the Genese module used for Angular applications, which will sa
 
 Returning typed objects from your data-services to your components is fundamental : if you do not, your component could receive incorrect data from the backend, and your application would crash automatically. That's why the mappers are so important. Unfortunately, writing mappers is long and fastidious. More, you need to write unit tests for your mappers, and add some mock values to be able to do these tests. Idem for your http requests, which should be tested with some tools like HttMock. That's why writing data-services is so long and fastidious. 
 
-So, what would you say if Genese could do ALL OF THAT for you ? Yes, that's right : Genese calls the http requests for you, and uses a Generic mapper which will send you back objects automatically typed ! In the next example, that means that you can simply destroy the file `book-data.service.ts` and put it in the garbage, with its associated test file `book-data.service.spec.ts`.
+So, what would you say if Genese could do ALL OF THAT for you ? Yes, that's right : Genese calls the http requests for you, and calls the core Genese module, [genese-mapper](https://www.npmjs.com/package/genese-mapper) mapper which will send you back objects automatically typed ! In the next example, that means that you can simply destroy the file `book-data.service.ts` and put it in the garbage, with its associated test file `book-data.service.spec.ts`.
 
 * Example
 
@@ -434,9 +434,9 @@ create() method needs that your app respects the Genese standards :
 
 * The api path must respect the REST api standards for a POST method (example : http://my-path/book)
 
-**Usage**`
+**Usage**
 
-Supposing that in your environment.ts, genese.api = http://localhost:3000`
+Supposing that in your environment.ts, `genese.api = http://localhost:3000`
 
 
 ``book.model.ts`` 
