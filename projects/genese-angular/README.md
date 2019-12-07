@@ -1,18 +1,18 @@
 # genese-angular  [![npm version](https://badge.fury.io/js/genese-angular.svg)](https://badge.fury.io/js/genese-angular)
 
-genese-angular is an Angular library which replaces all your data-services and all your mappers. Less code, less tests, less bugs, less waste of time.
+genese-angular is an Angular library which replaces all your data-services and all your mappers. Less code, less tests, less bugs, less waste of time. Under the hood, genese-angular uses the core of the Genese framework : [genese-mapper](https://www.npmjs.com/package/genese-mapper)
 
-Simple example using genese: https://github.com/gillesfabre34/genese-angular-demo
+Simple example using genese-angular: [genese-angular-demo](https://www.npmjs.com/package/genese-angular-demo)
 
 
 ## Table of Contents
-* [Why use GENESE ?](#why-use-genese-)
+* [Why use Genese ?](#why-use-genese-)
 * [Installation](#installation)
 * [Models](#models)
 * [Methods](#methods)
 
 
-## Why use GENESE ?
+## Why use Genese ?
 
 Genese is a powerful tool which will improve your productivity in building web apps. 
 

@@ -2,19 +2,19 @@
 
 genese-angular is an Angular library which replaces all your data-services and all your mappers. Less code, less tests, less bugs, less waste of time.
 
-Simple example using genese: https://github.com/gillesfabre34/genese-angular-demo
+Simple example using genese: [genese-angular-demo](https://www.npmjs.com/package/genese-angular-demo)
 
 
 ## Table of Contents
-* [Why use GENESE ?](#why-use-genese-)
+* [Why use genese-angular ?](#why-use-genese-angular)
 * [Installation](#installation)
 * [Models](#models)
 * [Methods](#methods)
 
 
-## Why use GENESE ?
+## Why use genese-angular
 
-Genese is a powerful tool which will improve your productivity in building web apps. 
+genese-angular is a powerful tool which will improve your productivity in building Angular web apps. 
 
 genese-angular is the Genese module used for Angular applications, which will save your time and help you to code Angular applications much faster. With genese-angular, all your Angular data-services will disappear ! Genese replaces the http requests located in your services, and replaces too the mappers used to format data coming from backend into typed objects.
 
