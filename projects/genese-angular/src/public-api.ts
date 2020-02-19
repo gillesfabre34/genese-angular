@@ -24,6 +24,7 @@ export * from './lib/factories/genese.factory';
 // export * from './lib/factories/genese-mapper.factory';
 
 // Models
+export * from './lib/models/array-response.model';
 export * from './lib/models/genese-config.model';
 export * from './lib/models/genese-model-environment.model';
 export * from './lib/models/get-all-params.model';

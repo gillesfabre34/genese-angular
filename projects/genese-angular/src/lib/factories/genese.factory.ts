@@ -230,7 +230,26 @@ export class Genese<T> {
     /**
      * Get one element of the T class (or the U class if the uConstructor param is defined)
      */
+    getArray(): Observable<any[]> {
+        console.log('%c GETARRAY ', 'font-weight: bold; color: green;');
+        // this.checkIfTTypeIsArrayResponseType();
+        // const url = this.apiRoot(this.getStandardPath(), id);
+        // return this.http.get(url)
+        //     .pipe(
+        //         map((data: any) => {
+        //             console.log('%c getOne', 'font-weight: bold; color: red;', data);
+                    // return this.geneseMapperService.map(data);
+                // })
+            // );
+        return;
+    }
+
+
+    /**
+     * Get one element of the T class (or the U class if the uConstructor param is defined)
+     */
     getOne(id: string): Observable<T> {
+        console.log('%c GET ONE NPM id', 'font-weight: bold; color: green;', id);
         this.checkId(id);
         const url = this.apiRoot(this.getStandardPath(), id);
         return this.http.get(url)
@@ -363,6 +382,17 @@ export class Genese<T> {
      * Check if the id is correct
      */
     checkId(id: string): void {
+        if (!id || !(+id > 0)) {
+            throw Error('Incorrect Genese id.');
+        }
+    }
+
+
+    /**
+     * Check if the type T contains the specific key 'gnArrayResponse'.
+     * If yes, T is a type is correct
+     */
+    checkIfTTypeIsArrayResponseType(id: string): void {
         if (!id || !(+id > 0)) {
             throw Error('Incorrect Genese id.');
         }
