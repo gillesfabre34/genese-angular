@@ -230,18 +230,23 @@ export class Genese<T> {
     /**
      * Get one element of the T class (or the U class if the uConstructor param is defined)
      */
-    getArray(): Observable<any[]> {
-        console.log('%c GETARRAY ', 'font-weight: bold; color: green;');
-        // this.checkIfTTypeIsArrayResponseType();
-        // const url = this.apiRoot(this.getStandardPath(), id);
-        // return this.http.get(url)
-        //     .pipe(
-        //         map((data: any) => {
-        //             console.log('%c getOne', 'font-weight: bold; color: red;', data);
-                    // return this.geneseMapperService.map(data);
-                // })
-            // );
-        return;
+    getArray(): Observable<any> {
+        console.log('%c GETARRAY this.tConstructor', 'font-weight: bold; color: green;', this.tConstructor);
+        this.checkIfTTypeIsArrayResponseType();
+        const url = this.apiRoot(this.getStandardPath());
+        console.log('%c getArray this.getStandardPath()', 'font-weight: bold; color: red;', this.getStandardPath());
+        return this.http.get(url)
+            .pipe(
+                map((data: any) => {
+                    console.log('%c getArray data', 'font-weight: bold; color: red;', data);
+                    const tObject = {
+                        gnArrayResponse: data
+                    };
+                    return this.geneseMapperService.map(tObject) ? this.geneseMapperService.map(tObject)['gnArrayResponse'] : undefined;
+                    // return this.geneseMapperService.map(tObject);
+                })
+            );
+        // return;
     }
 
 
@@ -392,9 +397,11 @@ export class Genese<T> {
      * Check if the type T contains the specific key 'gnArrayResponse'.
      * If yes, T is a type is correct
      */
-    checkIfTTypeIsArrayResponseType(id: string): void {
-        if (!id || !(+id > 0)) {
-            throw Error('Incorrect Genese id.');
+    checkIfTTypeIsArrayResponseType(): void {
+        const tObject = new this.tConstructor();
+        console.log('%c checkIfTTypeIsArrayResponseType tObject', 'font-weight: bold; color: fuchsia;', tObject);
+        if (!tObject['gnArrayResponse']) {
+            throw Error('The model must contain the gnArrayResponse property.');
         }
     }
 
