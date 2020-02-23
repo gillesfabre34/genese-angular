@@ -403,9 +403,10 @@ Genese provides many useful methods, like "classic" CRUD operations, but other i
 | [delete()](#delete-t-id-string-observable-responsestatus)                                                                                | Sends a DELETE request to remove an object in database. Needs to <br>respect Genese standards.                                                                                         |
 | [deleteCustom()](#deletecustom-t-path-string-options-requestoptions-observable-responsestatus)                                           | Sends a DELETE request to remove an object in database. Possibility to <br>use custom params, without respecting the Genese standards.                                                 |
 | [fetch()](#fetch-t-path-string-method-requestmethod-requestinit-requestinit-promise-t)                                                   | Sends a fetch request. Useful if you can't use the HttpClient for one or<br> another reason.                                                                                           |
-| [getAll()](#getall-t-params-getallparams-observablet)                                                                                    | Sends a GET request to get a list of objects from database and to format<br> them with the asked type. Needs to respect Genese standards.                                              |
-| [getAlWithPagination()](#getallwithpagination-t-path-string-params-getallwithpaginationparams-observableresults-t-totalresults-number)   | Sends a GET request to get a list of objects from database and to format<br> them with the asked type. Needs to respect Genese standards.                                              |
+| [getAll()](#getall-t-params-getallparams-observable-t)                                                                                    | Sends a GET request to get a list of objects from database and to format<br> them with the asked type. Needs to respect Genese standards.                                              |
+| [getAllWithPagination()](#getallwithpagination-t-path-string-params-getallwithpaginationparams-observableresults-t-totalresults-number)   | Sends a GET request to get a list of objects from database and to format<br> them with the asked type. Needs to respect Genese standards.                                              |
 | [getAllCustom()](#getallcustom-t-path-string-params-getallparams-observablet)                                                            | Sends a GET request to get a list of objects from database and to format<br> them with the asked type. Possibility to use custom params, without <br>respecting the Genese standards.      |
+| [getArray()](#getarray-arrayresponse--observable-t)                                                                                      | Sends a GET request to get an array of array of objects from database and to format<br> them with the asked type.                                                                      |
 | [getOne()](#getone-t-id-string-observable-t)                                                                                             | Sends a GET request to get an object from database and to format it <br>with the asked type. Needs to respect Genese standards.      |
 | [getOneCustom()](#getonecustompath-string-params-getoneparams-observablet)                                                               | Sends a GET request to get an object from database and to format it <br>with the asked type. Possibility to use custom params, without respecting <br>the Genese standards.      |
 | [request()](#request-t-path-string-method-requestmethod-options-requestoptions-observablet--any)                                         | Sends a http.request() method, which is permitting you to call api not<br> respecting REST conventions, like using a POST for getting objects.                                         |
@@ -690,7 +691,7 @@ export class BooksComponent {
 
 
 [Top](#table-of-contents) -> [Methods](#methods)
-### getAll< T >(params?: GetAllParams): Observable<T[]>
+### getAll< T >(params?: GetAllParams): Observable< T[]>
 
 This method is used to receive a list of objects with T type, without pagination.
 This method is used to get a list of T objects from http GET request and to format them with T type, without pagination.
@@ -905,6 +906,63 @@ export const environment = {
         }
     }
 };
+```
+
+
+
+
+
+
+[Top](#table-of-contents) -> [Methods](#methods)
+### getArray< ArrayResponse >(): Observable< T[]>
+
+
+`getArray()` method is used with GET http requests which are returning array of arrays of objects, like `[[Book]]`.
+
+This method needs that your app respects the Genese standards :
+
+You must add a genese param to your model to specify the endpoint's path  :
+
+* Your model must implement the ArrayResponse interface, which implies to add a specific genese param "gnArrayResponse" to indicate to Genese that you're waiting an array of arrays :
+
+* The endpoint must wait a GET method.
+
+* The api path must respect the REST api standards for a GET method (example : http://my-path/array-of-arrays-of-books)
+
+***CAUTION :***
+
+The getArray() method doesn't return an ArrayOfArraysOfBooks object, but the content of the gnArrayResponse property, ie a Book[][] object.
+
+**Usage**
+
+Supposing that in your environment.ts, `genese.api = http://localhost:3000` .
+
+``array-of-array-of-books.model.ts`` 
+```ts
+export class ArrayOfArraysOfBooks implements ArrayResponse {
+    gnArrayResponse?: Book[][] = [[new Book()]];
+    public genese?: GeneseModelEnvironment = {
+        path: '/array-response/array-of-arrays-of-books'
+    };
+}
+```
+
+``array-of-array-of-books.component.ts``
+```ts
+export class ArrayOfArrayOfBooksComponent {
+
+    public arrayOfArraysOfBooksGenese: Genese<ArrayOfArraysOfBooks>;
+
+    constructor(private geneseService: GeneseService) {
+        this.arrayOfArraysOfBooksGenese = geneseService.getGeneseInstance(ArrayOfArraysOfBooks);
+    }
+
+    this.arrayOfArraysOfBooksGenese.getArray().subscribe((arrayOfArraysOfBooks: Book[][]) => {
+         // arrayOfArraysOfBooks is the value of the property gnArrayResponse of the data 
+         // returned by the request http://localhost:3000/books/1
+         // and formatted with type Book[][]
+    });
+}
 ```
 
 
