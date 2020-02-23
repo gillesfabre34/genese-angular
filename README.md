@@ -407,7 +407,7 @@ Genese provides many useful methods, like "classic" CRUD operations, but other i
 | [getAlWithPagination()](#getallwithpagination-t-path-string-params-getallwithpaginationparams-observableresults-t-totalresults-number)   | Sends a GET request to get a list of objects from database and to format<br> them with the asked type. Needs to respect Genese standards.                                              |
 | [getAllCustom()](#getallcustom-t-path-string-params-getallparams-observablet)                                                            | Sends a GET request to get a list of objects from database and to format<br> them with the asked type. Possibility to use custom params, without <br>respecting the Genese standards.      |
 | [getOne()](#getone-t-id-string-observable-t)                                                                                             | Sends a GET request to get an object from database and to format it <br>with the asked type. Needs to respect Genese standards.      |
-| [getOneCustom()](#getonecustompath-string-params-getoneparams-observablet)                                                               | Sends a GET request to get an object from database and to format it <br>with the asked type. Possibility to use custom params, without respecting <br>the Genese standards.      |
+| [getOneCustom()](#getonecustompath-string-params-getoneparams-observable-t)                                                               | Sends a GET request to get an object from database and to format it <br>with the asked type. Possibility to use custom params, without respecting <br>the Genese standards.      |
 | [request()](#request-t-path-string-method-requestmethod-options-requestoptions-observablet--any)                                         | Sends a http.request() method, which is permitting you to call api not<br> respecting REST conventions, like using a POST for getting objects.                                         |
 | [translate()](#translatedata-any-language-string-any)                                                                                    | Special method used to translate automatically objects which are multi-<br>languages in one of these languages. Needs to respect Genese standards.                                     |
 | [update()](#update-t-id-string-updatedobject-t-options-requestoptions-observablet--any)                                                  | Sends a PUT request to update an object in database. Needs to respect <br>Genese standards.                                                                                            |
@@ -973,7 +973,7 @@ export class BooksComponent {
 
 
 [Top](#table-of-contents) -> [Methods](#methods)
-### getOneCustom(path: string, params?: GetOneParams): Observable<T>
+### getOneCustom(path: string, params?: GetOneParams): Observable< T>
 
 getOneCustom() method is used to get a T object in database with a GET http request. The returned object is mapped with the T type, which is given by the type of your `GeneseService`.
 
