@@ -150,13 +150,24 @@ export class Genese<T> {
 
     /**
      * Get all elements of array of data returned by GET request and map them with T type
+     * If you want specific HttpParams you should to declare them in the second parameter because
+     * they have priority over RequestOptions 
      */
-    getAllCustom(path: string, params?: GetAllParams): Observable<T[]> {
+    getAllCustom(path: string, params?: GetAllParams, requestOptions?: RequestOptions): Observable<T[]> {
         if (!path) {
             console.error('No path : impossible to get elements');
             return of(undefined);
         }
         let httpParams = new HttpParams();
+
+        if(requestOptions && requestOptions.params) {
+            for (const key of Object.keys(requestOptions.params)) {
+                if (requestOptions.params[key]) {
+                    httpParams = httpParams.set(key, requestOptions.params[key].toString());
+                }
+            }
+            delete requestOptions.params;
+        }
         if (params && params.filters) {
             for (const key of Object.keys(params.filters)) {
                 if (params.filters[key]) {
@@ -164,9 +175,9 @@ export class Genese<T> {
                 }
             }
         }
-        const options = {params: httpParams};
+        const allOptions = Object.assign({},{params: httpParams}, requestOptions);
         const url = this.apiRoot(path);
-        return this.http.get(url, options).pipe(
+        return this.http.get(url, allOptions).pipe(
             map((response: any) => {
                 return response ? this.geneseMapperService.arrayMap(response) : [];
             })
