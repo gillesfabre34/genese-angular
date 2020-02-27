@@ -449,7 +449,7 @@ create() method needs that your app respects the Genese standards :
 
 * The api path must respect the REST api standards for a POST method (example : http://my-path/book)
 
-**Usage**`
+**Usage**
 
 Supposing that in your environment.ts, genese.api = http://localhost:3000`
 
@@ -513,7 +513,7 @@ Same as [create()](#create-t-newobject-t-options-requestoptions-observablet--any
                                                        
 The backend must wait a POST http request.
 
-**Usage**`
+**Usage**
 
 Supposing that in your environment.ts, genese.api = http://localhost:3000`
 
@@ -739,7 +739,7 @@ Supposing that your http GET request returns a simple list of objects, without p
 ```
 In this case, the ``getAll()`` method returns an observable of array of Book, formatted with Book type. In this example, this method will return an array with two objects ``[Book, Book]``.
 
-**Usage**`
+**Usage**
 
 Supposing that in your environment.ts, ``genese.api = http://localhost:3000``
 
@@ -764,7 +764,7 @@ export class BooksComponent {
         this.booksGenese = geneseService.getGeneseInstance(Book);
     }
 
-    this.booksGenese.getÀll().subscribe((books: Book[]) => {
+    this.booksGenese.getAll().subscribe((books: Book[]) => {
          // books is the array of data returned by 
          // the GET request http://localhost:3000/books
          // and formatted with type Book
@@ -776,7 +776,7 @@ export class BooksComponent {
 You can add some filters to your http request very simply, just like this :
 
 ```ts
-    this.booksGenese.getÀll({author: 'Isaac Asimov'}).subscribe((books: Book[]) => {
+    this.booksGenese.getAll({author: 'Isaac Asimov'}).subscribe((books: Book[]) => {
          // books is the array of data returned by 
          // the GET request http://localhost:3000/books?author=Isaac%20Asimov
          // and formatted with type Book
@@ -798,7 +798,7 @@ But contrary to getAll() method, you can use a custom api path and you don't nee
 
 The backend must wait a GET http request.
 
-**Usage**`
+**Usage**
 
 Supposing that in your environment.ts, ``genese.api = http://localhost:3000``
 
