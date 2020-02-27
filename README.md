@@ -252,7 +252,21 @@ export class HomeComponent {
 Genese needs to be able to find all the properties of your models. That's why it is imperative to set default values to all the properties of your models, including inside nested objects.
 Respecting this constraint, Genese will be able to return all the objects correctly formatted.
 
-* Note
+* ***Optional***
+
+`getOne()` and `getAll()` methods are "cleaner" than `getOneCustom()` and `getAllCustom()` because they hide the path of the endpoints in your components. If you want to use them, you must specify the desired route in the model :
+
+```ts
+export class Book = {
+    id ?= '';
+    name ?= '';
+    public genese?: GeneseModelEnvironment = {
+        path: '/books'
+    };
+}
+```
+
+* ***Note***
 
 A Genese good practice is to set all the properties of your models as optional. It will be easier to create new objects and will not crash if one day you forget to set a property.
 
@@ -806,7 +820,7 @@ export class BooksComponent {
         this.booksGenese = geneseService.getGeneseInstance(Book);
     }
 
-    this.booksGenese.getÀllCustom('/books').subscribe((books: Book[]) => {
+    this.booksGenese.getAllCustom('/books').subscribe((books: Book[]) => {
          // books is the array of data returned by 
          // the GET request http://localhost:3000/books
          // and formatted with type Book
@@ -818,7 +832,7 @@ export class BooksComponent {
 You can add some filters to your http request very simply, just like this :
 
 ```ts
-    this.booksGenese.getÀll('/custom-books-path', {author: 'Isaac Asimov'}).subscribe((books: Book[]) => {
+    this.booksGenese.getAllCustom('/custom-books-path', {author: 'Isaac Asimov'}).subscribe((books: Book[]) => {
          // books is the array of data returned by 
          // the GET request http://localhost:3000/custom-books-path?author=Isaac%20Asimov
          // and formatted with type Book
